@@ -2,8 +2,8 @@
 var express  = require('express');
 var app      = express();                               // create our app w/ express
 var mongoose = require('mongoose');                     // mongoose for mongodb
-var port     = process.env.OPENSHIFT_NODEJS_PORT || 3001;                // set the port
-var ipaddress = process.env.OPENSHIFT_NODEJS_IP || "127.0.0.1";
+var port = process.env.OPENSHIFT_NODEJS_PORT ||  process.env.OPENSHIFT_INTERNAL_PORT || 3001;  
+var ipaddress = process.env.OPENSHIFT_NODEJS_IP || process.env.OPENSHIFT_INTERNAL_IP|| "127.0.0.1";  
 var database = require('./config/database');            // load the database config
 var morgan   = require('morgan');
 var bodyParser = require('body-parser');
