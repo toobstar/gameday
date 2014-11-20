@@ -1,50 +1,66 @@
-angular.module('todoController', [])
+angular.module('teamController', [])
 
-	// inject the Todo service factory into our controller
-	.controller('mainController', ['$scope','$http','Todos', function($scope, $http, Todos) {
+	// inject the Team service factory into our controller
+	.controller('mainController', ['$scope','$http','Teams', function($scope, $http, Teams) {
 		$scope.formData = {};
 		$scope.loading = true;
 
+		$scope.init = function() {
+			$scope.loading = true;
+			console.log('Teams.init');
+			Teams.init()
+				// if successful creation, call our get function to get all the new teams
+				.success(function(data) {
+					console.log('Teams.init data res',data);
+				});
+		};
+
 		// GET =====================================================================
-		// when landing on the page, get all todos and show them
-		// use the service to get all the todos
-		Todos.get()
+		// when landing on the page, get all teams and show them
+		// use the service to get all the teams
+		Teams.get()
 			.success(function(data) {
-				$scope.todos = data;
+				$scope.teams = data;
 				$scope.loading = false;
 			});
 
+        Teams.getEvents()
+            .success(function(data) {
+                $scope.events = data;
+                $scope.loading = false;
+            });
+
 		// CREATE ==================================================================
 		// when submitting the add form, send the text to the node API
-		$scope.createTodo = function() {
-
-			// validate the formData to make sure that something is there
-			// if form is empty, nothing will happen
-			if ($scope.formData.text != undefined) {
-				$scope.loading = true;
-
-				// call the create function from our service (returns a promise object)
-				Todos.create($scope.formData)
-
-					// if successful creation, call our get function to get all the new todos
-					.success(function(data) {
-						$scope.loading = false;
-						$scope.formData = {}; // clear the form so our user is ready to enter another
-						$scope.todos = data; // assign our new list of todos
-					});
-			}
-		};
+//		$scope.createTeam = function() {
+//
+//			// validate the formData to make sure that something is there
+//			// if form is empty, nothing will happen
+//			if ($scope.formData.text != undefined) {
+//				$scope.loading = true;
+//
+//				// call the create function from our service (returns a promise object)
+//				Teams.create($scope.formData)
+//
+//					// if successful creation, call our get function to get all the new teams
+//					.success(function(data) {
+//						$scope.loading = false;
+//						$scope.formData = {}; // clear the form so our user is ready to enter another
+//						$scope.teams = data; // assign our new list of teams
+//					});
+//			}
+//		};
 
 		// DELETE ==================================================================
-		// delete a todo after checking it
-		$scope.deleteTodo = function(id) {
+		// delete a team after checking it
+		$scope.initEvents = function(id) {
 			$scope.loading = true;
-
-			Todos.delete(id)
-				// if successful creation, call our get function to get all the new todos
+            console.log('initEvents '+id);
+			Teams.initEvents(id)
+				// if successful creation, call our get function to get all the new teams
 				.success(function(data) {
 					$scope.loading = false;
-					$scope.todos = data; // assign our new list of todos
+					$scope.events = data; // assign our new list of teams
 				});
 		};
 	}]);

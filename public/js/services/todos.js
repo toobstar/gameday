@@ -4,6 +4,10 @@ angular.module('todoService', [])
 	// each function returns a promise object 
 	.factory('Todos', ['$http',function($http) {
 		return {
+			init : function() {
+				console.log('todoService init');
+				return $http.get('/api/init');
+			},
 			get : function() {
 				return $http.get('/api/todos');
 			},
