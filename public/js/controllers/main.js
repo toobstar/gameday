@@ -20,12 +20,30 @@ angular.module('teamController', [])
 		// use the service to get all the teams
 		Teams.get()
 			.success(function(data) {
+
+//                if( Object.prototype.toString.call( data ) === '[object Array]' ) {
+//                    alert( 'Array!' );
+//                }
+//                else
+//                {
+//                    alert( 'Array!' );
+//                }
+
 				$scope.teams = data;
 				$scope.loading = false;
 			});
 
         Teams.getEvents()
             .success(function(data) {
+
+//                if( Object.prototype.toString.call( data ) === '[object Array]' ) {
+//                    alert( 'Array!' );
+//                }
+//                else
+//                {
+//                    alert( 'Array!' );
+//                }
+
                 $scope.events = data;
                 $scope.loading = false;
             });
@@ -51,8 +69,19 @@ angular.module('teamController', [])
 //			}
 //		};
 
-		// DELETE ==================================================================
-		// delete a team after checking it
+		$scope.selectTeam = function(id) {
+            $scope.currentTeam = id;
+        }
+
+		$scope.clearAll = function() {
+            Teams.clearAll()
+                // if successful creation, call our get function to get all the new teams
+                .success(function(data) {
+                    $scope.loading = false;
+                    $scope.events = null;
+                    $scope.teams = null;
+                });
+        }
 		$scope.initEvents = function(id) {
 			$scope.loading = true;
             console.log('initEvents '+id);

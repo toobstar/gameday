@@ -4,6 +4,10 @@ angular.module('teamService', [])
 	// each function returns a promise object 
 	.factory('Teams', ['$http',function($http) {
 		return {
+            clearAll : function() {
+                console.log('teamService clearAll');
+                return $http.get('/api/clearAll');
+            },
 			init : function() {
 				console.log('teamService init');
 				return $http.get('/api/init');

@@ -13,25 +13,35 @@ var processTeamResults = function(content) {
     var teams = JSON.parse(content);
     teams.forEach(function (team) {
         console.log('creating '+team.full_name);
-        Team.create(team);
+        Team.findOneAndUpdate(
+            {team_id: team.team_id},
+            team,
+            {upsert: true}, function(err, data){
+                console.log('Team.findOneAndUpdate result', err, data)
+            });
+        //Team.create(team);
     });
 }
 
 function fetchTeamData() {
     var method = 'nba/teams';
-    var params = {
-//    'sport': 'nba',
-//    'date': '20141119'
-    };
-    fetchData(method,params,processTeamResults);
+    fetchData(method,{},processTeamResults);
 }
 
 var processEventResults = function(content) {
     console.log('print result ', content);
     var events = JSON.parse(content);
     events.forEach(function (event) {
-        console.log('creating '+event.event_id);
-        Event.create(event);
+        console.log('creating or updating: '+event.event_id);
+
+        Event.findOneAndUpdate(
+            {event_id: event.event_id},
+            event,
+            {upsert: true}, function(err, data){
+                console.log('Event.findOneAndUpdate result', err, data)
+            });
+
+        //Event.create(event);
     });
 }
 
@@ -166,22 +176,22 @@ module.exports = function (app) {
 
     // api ---------------------------------------------------------------------
 
-    app.get('/api/init', function (req, res) {
-
-        Team.remove({}, function (err, team) {
-            console.log('cleaning '+team.team_id);
+    app.get('/api/clearAll', function (req, res) {
+        Team.remove({}, function (err) {
+            console.log('clearAll teams ');
             if (err)
                 res.send(err);
         }); // clear all first
 
-//        Event.remove({}, function (err, event) {
-//            console.log('cleaning '+event.event_id);
-//            if (err)
-//                res.send(err);
-//        }); // clear all first
+        Event.remove({}, function (err) {
+            console.log('clearAll events ');
+            if (err)
+                res.send(err);
+        }); // clear all first
+    });
 
+    app.get('/api/init', function (req, res) {
         fetchTeamData();
-
         console.log('init app.get2');
         res.send('done')
     });

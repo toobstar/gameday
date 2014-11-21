@@ -17,6 +17,8 @@
 		body 					{ padding-top:50px; }
 		#team-list 				{ margin-bottom:30px; }
 		#team-form 	 			{ margin-bottom:50px; }
+        .blueText                {color:blue}
+        .redText                {color:red}
 	</style>
 
 	<!-- SPELLS -->
@@ -31,51 +33,40 @@
 <body ng-controller="mainController">
 	<div class="container">
 
-		<!-- HEADER AND TEAM COUNT -->
 		<div class="jumbotron text-center">
-			<h1>Start page <span class="label label-info">{{ teams.length }}</span></h1>
-			<div ng-click="init()">init</div>			
+			<h1>Start page <span class="label label-info"></span></h1>
+			<div ng-click="clearAll()">Clear everything</div>
+			<div ng-click="init()">init teams</div>
+            Fetch games for team:
+            <span ng-repeat="team in teams" ng-click="initEvents(team.team_id)">
+                {{ team.full_name }}
+            </span>
 		</div>
 
 		<!-- TEAM LIST -->
 		<div id="team-list" class="row">
-			<div class="col-sm-4 col-sm-offset-4">
+			<div class="col-lg-6">
 
+                Show games for team:
+                <span ng-repeat="team in teams" ng-click="selectTeam(team.team_id)">
+                    {{ team.full_name }} |
+                </span>
 
-                <div class="checkbox" ng-repeat="team in teams">
-                    <label>
-                        <div ng-click="initEvents(team.team_id)">{{ team.full_name }}</div>
-                        <div ng-repeat="event in events" ng-show="event.event_id.indexOf(team.team_id)>-1">
-                             {{event.event_id}}
-                        </div>
-                    </label>
+			</div>
+            <div class="col-lg-6">
+
+                <div ng-repeat="team in teams" ng-show="team.team_id == currentTeam">
+                    <div ng-click="initEvents(team.team_id)">{{ team.full_name }}</div>
+                    <div ng-repeat="event in events| orderBy:'event_start_date_time':false" ng-show="event.event_id.indexOf(team.team_id)>-1" ng-class="{blueText:event.event_status=='scheduled',redText:event.event_status=='completed'}">
+                        {{event.event_id}} {{event.event_status}} {{event.event_start_date_time | date:'yyyy-MM-dd'}}
+                    </div>
                 </div>
 
-				<p class="text-center" ng-show="loading">
-					<span class="fa fa-spinner fa-spin fa-3x"></span>
-				</p>
+                <p class="text-center" ng-show="loading">
+                    <span class="fa fa-spinner fa-spin fa-3x"></span>
+                </p>
 
-			</div>
-		</div>
-
-		<!-- FORM TO CREATE TEAMS -->
-		<div id="team-form" class="row">
-			<div class="col-sm-8 col-sm-offset-2 text-center">
-				<form>
-					<div class="form-group">
-
-						<!-- BIND THIS VALUE TO formData.text IN ANGULAR -->
-						<input type="text" class="form-control input-lg text-center" placeholder="I want to buy a puppy that will love me forever" ng-model="formData.text">
-					</div>
-
-					<!-- createTeam() WILL CREATE NEW TEAMS -->
-					<button type="submit" class="btn btn-primary btn-lg" ng-click="createTeam()">Add</button>
-				</form>
-			</div>
-		</div>
-
-		<div class="text-center text-muted">
-			<p>A demo by <a href="#">me</a>.</p>			
+            </div>
 		</div>
 
 	</div>
