@@ -81,8 +81,14 @@ function fetchEventDetail(eventId) {
 
 function fetchData(method,params,resultProcessor, inputId) {
 
+    // configure: rhc env-set NBA_ACCESS_TOKEN=929daf54-c374-4951-a2e3-ccc4e79eb6ce -a gd
+    //var ACCESS_TOKEN = '929daf54-c374-4951-a2e3-ccc4e79eb6ce';
+    var ACCESS_TOKEN = '';
     // Replace with your access token
-    var ACCESS_TOKEN = '929daf54-c374-4951-a2e3-ccc4e79eb6ce';
+    if (process.env.NBA_ACCESS_TOKEN) {
+        ACCESS_TOKEN = process.env.NBA_ACCESS_TOKEN;
+    }
+
     var USER_AGENT = 'tvBot';
     var TIME_ZONE = 'America/New_York';
 
