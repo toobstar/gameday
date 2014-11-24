@@ -21,7 +21,7 @@
         .redText                {color:red}
 	</style>
 
-	<!-- SPELLS -->
+    <script src="//ajax.googleapis.com/ajax/libs/jquery/1.8.3/jquery.min.js"></script>
 	<script src="//ajax.googleapis.com/ajax/libs/angularjs/1.2.16/angular.min.js"></script><!-- load angular -->
 
 	<script src="js/controllers/main.js"></script> <!-- load up our controller -->
@@ -34,31 +34,39 @@
 	<div class="container">
 
 		<div class="jumbotron text-center">
-			<h1>Start page <span class="label label-info"></span></h1>
-			<div ng-click="clearAll()">Clear everything</div>
-			<div ng-click="init()">init teams</div>
-            Fetch games for team:
-            <span ng-repeat="team in teams" ng-click="initEvents(team.team_id)">
-                {{ team.full_name }}
-            </span>
+			<h1>ABC<span class="label label-info"></span></h1>
+			<span ng-click="clearAll()">Clear everything</span> | <span ng-click="init()">Fetch teams</span>
+            <div>
+                Fetch games for team:
+                <span ng-repeat="team in teams" ng-click="initEvents(team.team_id)">
+                    {{ team.full_name }}
+                </span>
+            </div>
 		</div>
 
 		<!-- TEAM LIST -->
 		<div id="team-list" class="row">
 			<div class="col-lg-6">
-
-                Show games for team:
-                <span ng-repeat="team in teams" ng-click="selectTeam(team.team_id)">
+                By team:
+                <span ng-repeat="team in teams" ng-click="selectTeam(team.team_id)" ng-class="{blueText:team.team_id==currentTeam}">
                     {{ team.full_name }} |
                 </span>
-
 			</div>
             <div class="col-lg-6">
 
                 <div ng-repeat="team in teams" ng-show="team.team_id == currentTeam">
-                    <div ng-click="initEvents(team.team_id)">{{ team.full_name }}</div>
-                    <div ng-repeat="event in events| orderBy:'event_start_date_time':false" ng-show="event.event_id.indexOf(team.team_id)>-1" ng-class="{blueText:event.event_status=='scheduled',redText:event.event_status=='completed'}">
-                        {{event.event_id}} {{event.event_status}} {{event.event_start_date_time | date:'yyyy-MM-dd'}}
+                    <div ng-repeat="event in events| orderBy:'event_start_date_time':false"
+                         ng-click="updateEvent(event.event_id)"
+                         ng-if="event.event_status=='completed' && event.event_id.indexOf(team.team_id)>-1"
+                         ng-class="{blueText:event.event_status=='scheduled',redText:event.event_status=='completed'}">
+                        {{teamsById[event.away_team_id].full_name}} at
+                        {{teamsById[event.home_team_id].full_name}} on
+                        {{event.event_start_date_time | date:'mediumDate'}}
+                        <!--{{event.fullModel.home_period_scores}}-->
+                        <!--{{event.fullModel.away_period_scores}}-->
+                        <!--<div ng-repeat="stat in event.fullModel.away_stats">-->
+                            <!--{{stat.display_name}} {{stat.points}},-->
+                        <!--</div>-->
                     </div>
                 </div>
 

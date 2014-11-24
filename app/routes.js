@@ -32,8 +32,11 @@ var processEventResults = function(content) {
     console.log('print result ', content);
     var events = JSON.parse(content);
     events.forEach(function (event) {
-        console.log('creating or updating: '+event.event_id);
-
+        console.log('creating or updating: ',event);
+        event.home_team_id=event.team.team_id;
+        //event.home_team_id=event.home_team.team_id;
+        event.away_team_id=event.opponent.team_id;
+        //event.away_team_id=event.away_team.team_id;
         Event.findOneAndUpdate(
             {event_id: event.event_id},
             event,
@@ -54,7 +57,29 @@ function fetchTeamEvents(teamId) {
     fetchData(method,params,processEventResults);
 }
 
-function fetchData(method,params,resultProcessor) {
+var processEventDetailResults = function(content, eventId) {
+    console.log('print result ', eventId, content);
+    var eventDetail = JSON.parse(content);
+    console.log('creating or updating detail: ', eventId, eventDetail);
+    eventDetail.fullModel = JSON.parse(content);
+    Event.findOneAndUpdate(
+        {event_id: eventId},
+        eventDetail,
+        {upsert: true}, function(err, data){
+            console.log('Event.findOneAndUpdate (update) result', err, data)
+        });
+}
+
+function fetchEventDetail(eventId) {
+    var method = 'nba/boxscore/'+eventId;
+    var params = {
+//    'sport': 'nba',
+//    'date': '20141119'
+    };
+    fetchData(method,params,processEventDetailResults, eventId);
+}
+
+function fetchData(method,params,resultProcessor, inputId) {
 
     // Replace with your access token
     var ACCESS_TOKEN = '929daf54-c374-4951-a2e3-ccc4e79eb6ce';
@@ -106,10 +131,10 @@ function fetchData(method,params,resultProcessor) {
                         console.warn("Error trying to decompress data: " + err.message);
                         process.exit(1);
                     }
-                    resultProcessor(decoded);
+                    resultProcessor(decoded, inputId);
                 });
             } else {
-                resultProcessor(chunks.join(''));
+                resultProcessor(chunks.join(''), inputId);
             }
         });
     }).on('error', function (err) {
@@ -200,6 +225,12 @@ module.exports = function (app) {
         console.log('initEvents for '+req.params.team_id);
         fetchTeamEvents(req.params.team_id);
         res.send('done')
+    });
+
+    app.get('/api/updateEvent/:event_id', function (req, res) {
+        console.log('updateEvent for '+req.params.event_id);
+        fetchEventDetail(req.params.event_id);
+        getEvents(res);
     });
 
     app.get('/api/teams', function (req, res) {
