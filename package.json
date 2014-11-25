@@ -12,6 +12,7 @@
     "method-override" : "~2.1.1",
 
     "moment-timezone" : "~0.2.5",
-    "sprintf"         : "~0.1.4"
+    "sprintf"         : "~0.1.4",
+    "underscore"      : "~1.7.0"
   }
 }
