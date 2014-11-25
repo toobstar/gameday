@@ -82,18 +82,34 @@ angular.module('teamController', [])
 
 		$scope.clearAll = function() {
             Teams.clearAll()
-                // if successful creation, call our get function to get all the new teams
                 .success(function(data) {
                     $scope.loading = false;
                     $scope.events = null;
                     $scope.teams = null;
                 });
         }
-		$scope.updateEvent = function(id) {
+        $scope.updateEvent = function(id) {
             $scope.loading = true;
             console.log('updateEvent '+id);
             Teams.updateEvent(id)
-                // if successful creation, call our get function to get all the new teams
+                .success(function(data) {
+                    $scope.loading = false;
+                    $scope.events = data; // assign our new list of teams
+                });
+        }
+		$scope.updateCompletedEvents = function(id) {
+            $scope.loading = true;
+            console.log('updateCompletedEvents '+id);
+            Teams.updateCompletedEvents(id)
+                .success(function(data) {
+                    $scope.loading = false;
+                    $scope.events = data; // assign our new list of teams
+                });
+        }
+        $scope.processEvent = function(id) {
+            $scope.loading = true;
+            console.log('processEvent '+id);
+            Teams.processEvent(id)
                 .success(function(data) {
                     $scope.loading = false;
                     $scope.events = data; // assign our new list of teams

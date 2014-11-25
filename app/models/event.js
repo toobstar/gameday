@@ -7,7 +7,14 @@ module.exports = mongoose.model('Event', {
     event_season_type : {type : String, default: ''},
     away_team_id : {type : String, default: ''},
     home_team_id : {type : String, default: ''},
-    fullModel : {type : Object, default: null}
+    fullModel : {type : Object, default: null},
+
+    pointsTotalDiff : {type : String, default: ''},
+    pointsFinalDiff : {type : String, default: ''},
+    scorePointsDiff : {type : String, default: ''},
+    leadChanges : {type : String, default: ''}
+
+
 });
 
 

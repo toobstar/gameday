@@ -16,12 +16,19 @@ angular.module('teamService', [])
                 console.log('teamService updateEvent');
                 return $http.get('/api/updateEvent/'+id);
             },
+            processEvent : function(id) {
+                console.log('teamService processEvent');
+                return $http.get('/api/processEvent/'+id);
+            },
             initEvents : function(id) {
                 console.log('teamService init');
                 return $http.get('/api/initEvents/'+id);
             },
             getEvents : function() {
                 return $http.get('/api/events');
+            },
+            updateCompletedEvents : function() {
+                return $http.get('/api/updateCompletedEvents');
             },
 			get : function() {
 				return $http.get('/api/teams');
