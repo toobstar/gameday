@@ -4,6 +4,7 @@ angular.module('teamController', [])
 	.controller('mainController', ['$scope','$http','Teams', function($scope, $http, Teams) {
 		$scope.formData = {};
 		$scope.loading = true;
+		$scope.eventCount = 10;
 
 		$scope.init = function() {
 			$scope.loading = true;
@@ -20,15 +21,6 @@ angular.module('teamController', [])
 		// use the service to get all the teams
 		Teams.get()
 			.success(function(data) {
-
-//                if( Object.prototype.toString.call( data ) === '[object Array]' ) {
-//                    alert( 'Array!' );
-//                }
-//                else
-//                {
-//                    alert( 'Array!' );
-//                }
-
 				$scope.teams = data;
 				$scope.teamsById = {};
 
@@ -40,20 +32,33 @@ angular.module('teamController', [])
 				$scope.loading = false;
 			});
 
-        Teams.getEvents()
+//        Teams.getEvents()
+//            .success(function(data) {
+//                $scope.events = data;
+//                $scope.loading = false;
+//            });
+
+        Teams.completedEvents()
             .success(function(data) {
-
-//                if( Object.prototype.toString.call( data ) === '[object Array]' ) {
-//                    alert( 'Array!' );
-//                }
-//                else
-//                {
-//                    alert( 'Array!' );
-//                }
-
-                $scope.events = data;
+                $scope.completedEvents = data;
                 $scope.loading = false;
+
+                var $container = $('.blogTiles');
+                $container.masonry({
+                    containerStyle:{
+                        position: 'relative',
+                        width: '100%'
+                    },
+                    columnWidth: '.ele',
+                    gutter: 0,
+                    itemSelector: '.ele',
+                    transitionDuration: '.2s',
+                    isInitLayout: false
+                });
+                $container.masonry();
             });
+
+
 
 		// CREATE ==================================================================
 		// when submitting the add form, send the text to the node API
@@ -76,8 +81,28 @@ angular.module('teamController', [])
 //			}
 //		};
 
-		$scope.selectTeam = function(id) {
-            $scope.currentTeam = id;
+//		$scope.selectTeam = function(id) {
+//            $scope.currentTeam = id;
+//        }
+
+        $scope.currentTeam = null;
+
+        $scope.showMore = function() {
+            $scope.eventCount = $scope.eventCount + 5;
+        }
+
+        $scope.matchTeam = function(event){
+            //console.log('matchTeam',event);
+            if (!$scope.currentTeam || !$scope.currentTeam.team_id)
+                return true;
+
+            if (event.away_team_id == $scope.currentTeam.team_id)
+                return true;
+
+            if (event.home_team_id == $scope.currentTeam.team_id)
+                return true;
+
+            return false;
         }
 
 		$scope.clearAll = function() {

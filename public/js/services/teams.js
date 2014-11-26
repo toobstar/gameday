@@ -24,6 +24,9 @@ angular.module('teamService', [])
                 console.log('teamService init');
                 return $http.get('/api/initEvents/'+id);
             },
+            completedEvents : function() {
+                return $http.get('/api/completedEvents');
+            },
             getEvents : function() {
                 return $http.get('/api/events');
             },

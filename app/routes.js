@@ -208,7 +208,7 @@ function getTeams(res) {
 };
 
 function getEvents(res) {
-    console.log('getTeams');
+    console.log('getEvents');
     Event.find(function (err, events) {
         console.log('Event.find');
         // if there is an error retrieving, send the error. nothing after res.send(err) will execute
@@ -216,6 +216,28 @@ function getEvents(res) {
             res.send(err)
 
         res.json(events);
+    });
+};
+
+function getCompletedEvents(res) {
+    console.log('getCompletedEvents');
+    Event.find(function (err, events) {
+        console.log('Event.find');
+        // if there is an error retrieving, send the error. nothing after res.send(err) will execute
+        if (err)
+            res.send(err)
+
+        var now = moment();
+        var completedEvents = [];
+
+        _.each(events,function(event) {
+            var eventDate = moment(event.event_start_date_time);
+            if (eventDate.isBefore(now)) {
+                completedEvents.push(event);
+            }
+        });
+
+        res.json(completedEvents);
     });
 };
 
@@ -393,7 +415,13 @@ module.exports = function (app) {
         getTeams(res);
     });
 
-    // get all todos
+    app.get('/api/completedEvents', function (req, res) {
+
+        // use mongoose to get all todos in the database
+        console.log('/api/completedEvents');
+        getCompletedEvents(res);
+    });
+
     app.get('/api/events', function (req, res) {
 
         // use mongoose to get all todos in the database
