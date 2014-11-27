@@ -9,6 +9,8 @@ var zlib = require('zlib');
 var _ = require("underscore");
 
 
+var apiCallInProgress = false;
+
 var processTeamResults = function(content) {
     console.log('print result ', content);
     var teams = JSON.parse(content);
@@ -30,6 +32,7 @@ function fetchTeamData() {
 }
 
 var processEventResults = function(content) {
+    apiCallInProgress = false;
     console.log('print result ', content);
     var events = JSON.parse(content);
     events.forEach(function (event) {
@@ -49,13 +52,19 @@ var processEventResults = function(content) {
     });
 }
 
-function fetchTeamEvents(teamId) {
-    var method = 'nba/results/'+teamId;
-    var params = {
-//    'sport': 'nba',
-//    'date': '20141119'
-    };
-    fetchData(method,params,processEventResults);
+var teamIdQueue = [];
+function fetchTeamEvents() {
+    if (teamIdQueue.length > 0) {
+        if (apiCallInProgress == false) {
+            apiCallInProgress = true;
+            var teamId = teamIdQueue.shift();
+            var method = 'nba/results/'+teamId;
+            fetchData(method,{},processEventResults);
+        }
+
+        console.log('fetchTeamEvents waiting 11s');
+        setTimeout(function(){fetchTeamEvents()}, 11000);
+    }
 }
 
 var processEventDetailResults = function(content, eventId) {
@@ -74,7 +83,6 @@ var processEventDetailResults = function(content, eventId) {
 }
 
 var eventIdQueue = [];
-var apiCallInProgress = false;
 var queuedFetchEventDetail = function() {
     console.log('queuedFetchEventDetail ',eventIdQueue);
     if (eventIdQueue.length > 0) {
@@ -105,7 +113,7 @@ function fetchData(method,params,resultProcessor, inputId) {
         ACCESS_TOKEN = process.env.NBA_ACCESS_TOKEN;
     }
 
-    var USER_AGENT = 'tvBot';
+    var USER_AGENT = 'MyRobot/1.0 (toby.vidler@gmail.com)';
     var TIME_ZONE = 'America/New_York';
 
     // Set the API method, format, and any parameters
@@ -227,12 +235,13 @@ function getCompletedEvents(res) {
         if (err)
             res.send(err)
 
-        var now = moment();
+        var now = moment().subtract(10, 'hours');
         var completedEvents = [];
 
         _.each(events,function(event) {
-            var eventDate = moment(event.event_start_date_time);
+            var eventDate = moment(event.event_start_date_time);   // need to confirm timezone situation..
             if (eventDate.isBefore(now)) {
+                event.fullModel = null;// clear full model to make object more light weight
                 completedEvents.push(event);
             }
         });
@@ -340,9 +349,30 @@ module.exports = function (app) {
         res.send('done')
     });
 
+    app.get('/api/initAllEvents', function (req, res) {
+        console.log('initAllEvents');
+
+        Team.find(function (err, teams) {
+            console.log('Team.find');
+            // if there is an error retrieving, send the error. nothing after res.send(err) will execute
+            if (err)
+                res.send(err)
+
+            _.each(teams,function(team){
+                console.log('initEvents for '+team.team_id);
+                teamIdQueue.push(team.team_id);
+            });
+
+            fetchTeamEvents();
+        });
+
+        res.send('done')
+    });
+
     app.get('/api/initEvents/:team_id', function (req, res) {
         console.log('initEvents for '+req.params.team_id);
-        fetchTeamEvents(req.params.team_id);
+        teamIdQueue.push(req.params.team_id);
+        fetchTeamEvents();
         res.send('done')
     });
 
@@ -355,7 +385,7 @@ module.exports = function (app) {
     app.get('/api/updateCompletedEvents', function (req, res) {
         console.log('updateCompletedEvents');
 
-        var now = moment();
+        var now = moment().subtract(10, 'hours');
         Event.find({},function (err, events) {
 
             // if there is an error retrieving, send the error. nothing after res.send(err) will execute

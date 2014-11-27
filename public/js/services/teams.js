@@ -27,6 +27,9 @@ angular.module('teamService', [])
             completedEvents : function() {
                 return $http.get('/api/completedEvents');
             },
+            initAllEvents : function() {
+                return $http.get('/api/initAllEvents');
+            },
             getEvents : function() {
                 return $http.get('/api/events');
             },

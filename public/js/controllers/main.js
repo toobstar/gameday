@@ -150,4 +150,15 @@ angular.module('teamController', [])
 					$scope.events = data; // assign our new list of teams
 				});
 		};
+        $scope.initAllEvents = function() {
+            $scope.loading = true;
+            console.log('initAllEvents ');
+            Teams.initAllEvents()
+                .success(function(data) {
+                    $scope.loading = false;
+                });
+        };
+
+
+
 	}]);
