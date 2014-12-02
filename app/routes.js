@@ -71,7 +71,7 @@ function fetchTeamEvents() {
             fetchData(method,{},processEventResults);
         }
 
-        console.log('fetchTeamEvents waiting 11s');
+        console.log('fetchTeamEvents waiting 11s - queued: ' + teamIdQueue.length);
         setTimeout(function(){fetchTeamEvents()}, 11000);
     }
 }
@@ -102,7 +102,7 @@ var queuedFetchEventDetail = function() {
             fetchEventDetail(eventId);
         }
 
-        console.log('queuedFetchEventDetail waiting 11s');
+        console.log('queuedFetchEventDetail waiting 11s - queued: ' + eventIdQueue.length);
         setTimeout(function(){queuedFetchEventDetail()}, 11000);
     }
 };
