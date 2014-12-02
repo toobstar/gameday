@@ -2,10 +2,10 @@
 <html ng-app="gameDay">
 <head>
 	<meta charset="utf-8">
-	<meta name="viewport" content="width=device-width, initial-scale=1"><!-- Optimize mobile viewport -->
+	<meta name="viewport" content="width=device-width, initial-scale=1">
 	<title>Which is the best NBA game to watch</title>
 
-    <link href='http://fonts.googleapis.com/css?family=Ubuntu' rel='stylesheet' type='text/css'>
+    <link rel="stylesheet" href="//fonts.typotheque.com/WF-021117-002395.css" type="text/css" />
 	<link rel="stylesheet" href="//netdna.bootstrapcdn.com/bootstrap/3.0.0/css/bootstrap.min.css"><!-- load bootstrap -->
 	<link rel="stylesheet" href="//netdna.bootstrapcdn.com/font-awesome/4.0.3/css/font-awesome.min.css">
 
@@ -23,7 +23,22 @@
             color:  darkorange;
         }
         .pageHeaderTxt {
-            font-family: 'Ubuntu', sans-serif;
+            border-bottom-color: #DFDFDF;
+            border-bottom-style: solid;
+            border-bottom-width: 1px;
+            color: #FCF8F9;
+            display: inline-block;
+            font-family: "Jigsaw Light", sans-serif;
+            font-size: 58px;
+            font-stretch: normal;
+            font-style: normal;
+            font-weight: 400;
+            letter-spacing: 5.8px;
+            line-height: 69.6px;
+            text-align: center;
+            text-shadow: #444 -1px -1px 0px, #444 1px -1px 1px, #444 -1px 1px 1px, #444 1px 1px 0px;
+            text-transform: uppercase;
+            word-wrap: break-word;
         }
 
         .eveContainer .eve {
@@ -74,13 +89,14 @@
 	<script src="//ajax.googleapis.com/ajax/libs/angularjs/1.2.16/angular.min.js"></script><!-- load angular -->
     <script src="//cdnjs.cloudflare.com/ajax/libs/masonry/3.1.5/masonry.pkgd.min.js"></script>
 
+    <!-- offline dev -->
     <!--<script src="js/lib/jquery.min.js"></script>-->
     <!--<script src="js/lib/angular.min.js"></script>-->
     <!--<script src="js/lib/masonry.pkgd.min.js"></script>-->
 
-	<script src="js/controllers/main.js"></script> <!-- load up our controller -->
-	<script src="js/services/teams.js"></script> <!-- load our team service -->
-	<script src="js/core.js"></script> <!-- load our main application -->
+	<script src="js/controllers/main.js"></script>
+	<script src="js/services/teams.js"></script>
+	<script src="js/core.js"></script>
 
 </head>
 <body ng-controller="mainController">
@@ -146,8 +162,9 @@
         function setImgBg() {
             var idxImg = Math.floor(Math.random() * 5);
             var idxPos = Math.floor(Math.random() * 6);
-            $('.pageHeader').css('background-position','url(' + psnArray[idxPos] + ')');
-            $('.pageHeader').css('background-image','url(' + imgArray[idxImg] + ')');
+            var ph = $('.pageHeader');
+            ph.css('background-position','url(' + psnArray[idxPos] + ')');
+            ph.css('background-image','url(' + imgArray[idxImg] + ')');
         }
         setInterval(function(){ setImgBg(); }, 7000);
 
