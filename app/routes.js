@@ -31,7 +31,6 @@ var processTeamResults = function(content) {
             {upsert: true}, function(err, data){
                 console.log('Team.findOneAndUpdate result', err, data)
             });
-        //Team.create(team);
     });
 }
 
@@ -452,8 +451,8 @@ module.exports = function (app) {
             });
             queuedFetchEventDetail();
 
-            //fetchEventDetail(req.params.event_id);
-            res.json(events);
+            res.send('done')
+//            res.json(events);
         });
     });
 

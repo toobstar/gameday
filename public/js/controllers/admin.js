@@ -9,6 +9,14 @@ app.controller('adminController', ['$scope','$http','Teams', '$location', functi
                     $scope.teams = null;
                 });
         }
+        $scope.init = function() {
+            $scope.loading = true;
+            console.log('Teams.init');
+            Teams.init()
+                .success(function(data) {
+                    console.log('Teams.init data res',data);
+                });
+        };
         $scope.updateEvent = function(id) {
             $scope.loading = true;
             console.log('updateEvent '+id);

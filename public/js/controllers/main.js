@@ -9,15 +9,6 @@ angular.module('teamController', [])
         $scope.currentRating = '';
         $scope.ratings = ["A","B","C"];
 
-		$scope.init = function() {
-			$scope.loading = true;
-			console.log('Teams.init');
-			Teams.init()
-				.success(function(data) {
-					console.log('Teams.init data res',data);
-				});
-		};
-
 		// REST API ====
 		// when landing on the page get all teams
 		Teams.get()
