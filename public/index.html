@@ -95,6 +95,10 @@
                 <select ng-model="currentTeam" ng-options="team.full_name for team in teams" style="margin-left:9px">
                     <option value=""> Team </option>
                 </select>
+                <select ng-model="currentRating" style="margin-left:9px" >
+                    <option value=""> Rating </option>
+                    <option ng-repeat="rating in ratings" value="{{rating}}">{{rating}}</option>
+                </select>
             </div>
             <div class="eveContainer">
                 <div class="eve" ng-repeat="event in completedEvents | filter:matchTeam | orderBy:'event_start_date_time':true | limitTo:eventCount" on-last-repeat>
@@ -145,7 +149,7 @@
             $('.pageHeader').css('background-position','url(' + psnArray[idxPos] + ')');
             $('.pageHeader').css('background-image','url(' + imgArray[idxImg] + ')');
         }
-        setInterval(function(){ setImgBg(); }, 5000);
+        setInterval(function(){ setImgBg(); }, 7000);
 
         (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
             (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),

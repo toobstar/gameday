@@ -86,6 +86,9 @@ angular.module('teamController', [])
 //        }
 
         $scope.currentTeam = null;
+        $scope.currentRating = null;
+        $scope.currentRating = '';
+        $scope.ratings = ["A","B","C"];
 
         $scope.showMore = function() {
             $scope.eventCount = $scope.eventCount + 5;
@@ -93,6 +96,12 @@ angular.module('teamController', [])
 
         $scope.matchTeam = function(event){
             //console.log('matchTeam',event);
+            var res1 = $scope.matchTeamById(event);
+            var res2 = $scope.matchTeamByRating(event);
+            return res1 && res2;
+        }
+        $scope.matchTeamById = function(event){
+            //console.log('matchTeamById',event);
             if (!$scope.currentTeam || !$scope.currentTeam.team_id)
                 return true;
 
@@ -100,6 +109,17 @@ angular.module('teamController', [])
                 return true;
 
             if (event.home_team_id == $scope.currentTeam.team_id)
+                return true;
+
+            return false;
+        }
+
+        $scope.matchTeamByRating = function(event){
+            //console.log('matchTeamByRating',event);
+            if (!$scope.currentRating)
+                return true;
+
+            if (event.pointsBasedRating == $scope.currentRating)
                 return true;
 
             return false;
