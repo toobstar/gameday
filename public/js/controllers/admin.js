@@ -9,12 +9,12 @@ app.controller('adminController', ['$scope','$http','Teams', '$location', functi
                     $scope.teams = null;
                 });
         }
-        $scope.init = function() {
+        $scope.initTeams = function() {
             $scope.loading = true;
-            console.log('Teams.init');
-            Teams.init()
+            console.log('Teams.initTeams');
+            Teams.initTeams()
                 .success(function(data) {
-                    console.log('Teams.init data res',data);
+                    console.log('Teams.initTeams data res',data);
                 });
         };
         $scope.updateEvent = function(id) {
@@ -26,10 +26,10 @@ app.controller('adminController', ['$scope','$http','Teams', '$location', functi
                     $scope.events = data; 
                 });
         }
-		$scope.updateCompletedEvents = function() {
+		$scope.boxScoreForCompleted = function() {
             $scope.loading = true;
-            console.log('updateCompletedEvents');
-            Teams.updateCompletedEvents()
+            console.log('boxScoreForCompleted');
+            Teams.boxScoreForCompleted()
                 .success(function(data) {
                     $scope.loading = false;
                     $scope.events = data;
@@ -72,13 +72,13 @@ app.controller('adminController', ['$scope','$http','Teams', '$location', functi
                 });
         };
 
-        $scope.funcCalled = null;
-        var initAction = ($location.search()).target;
-        console.log("initAction", initAction);
-        if (initAction == 'updateCompletedEvents') {
-            console.log("initAction-updateCompletedEvents");
-            $scope.updateCompletedEvents();
-            $scope.funcCalled = "loading";
-        }
+//        $scope.funcCalled = null;
+//        var initAction = ($location.search()).target;
+//        console.log("initAction", initAction);
+//        if (initAction == 'boxScoreForCompleted') {
+//            console.log("initAction-boxScoreForCompleted");
+//            $scope.boxScoreForCompleted();
+//            $scope.funcCalled = "loading";
+//        }
 
 	}]);

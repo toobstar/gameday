@@ -8,9 +8,9 @@ angular.module('teamService', [])
                 console.log('teamService clearAll');
                 return $http.get('/api/clearAll');
             },
-			init : function() {
-				console.log('teamService init');
-				return $http.get('/api/init');
+			initTeams : function() {
+				console.log('teamService initTeams');
+				return $http.get('/api/initTeams');
 			},
             updateEvent : function(id) {
                 console.log('teamService updateEvent');
@@ -21,7 +21,7 @@ angular.module('teamService', [])
                 return $http.get('/api/processEvent/'+id);
             },
             initEvents : function(id) {
-                console.log('teamService init');
+                console.log('teamService initEvents');
                 return $http.get('/api/initEvents/'+id);
             },
             completedEvents : function() {
@@ -33,8 +33,8 @@ angular.module('teamService', [])
             getEvents : function() {
                 return $http.get('/api/events');
             },
-            updateCompletedEvents : function() {
-                return $http.get('/api/updateCompletedEvents');
+            boxScoreForCompleted : function() {
+                return $http.get('/api/boxScoreForCompleted');
             },
 			get : function() {
 				return $http.get('/api/teams');

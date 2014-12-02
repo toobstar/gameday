@@ -54,6 +54,7 @@ var processEventResults = function(content) {
             event,
             {upsert: true}, function(err, data){
                 console.log('Event.findOneAndUpdate result', err, data)
+                calcScores(event);
             });
 
         //Event.create(event);
@@ -159,6 +160,7 @@ function fetchData(method,params,resultProcessor, inputId) {
             if (res.statusCode !== 200) {
                 // handle error...
                 console.warn("Server did not return a 200 response!\n" + chunks.join(''));
+                return;
                 //process.exit(1);
             }
             encoding = res.headers['content-encoding'];
@@ -168,6 +170,7 @@ function fetchData(method,params,resultProcessor, inputId) {
                     if (err) {
                         console.warn("Error trying to decompress data: " + err.message);
                         //process.exit(1);
+                        return;
                     }
                     resultProcessor(decoded, inputId);
                 });
@@ -178,6 +181,7 @@ function fetchData(method,params,resultProcessor, inputId) {
     }).on('error', function (err) {
             console.warn("Error trying to contact server: " + err.message);
             //process.exit(1);
+            return;
         });
 }
 
@@ -335,14 +339,17 @@ function calcScores(event) {
         else
             event.pointsBasedRating = 'C';
 
-        Event.findOneAndUpdate(
-            {event_id: event.event_id},
-            event.toObject(),
-            {upsert: false}, function(err2, data2){
-                if (err2) {
-                    console.log('Event.findOneAndUpdate error:', event.event_id, err2)
-                }
-            });
+
+        event.save();
+        //event._id = null; // clear id to prevent:    errmsg: 'exception: Mod on _id not allowed',
+//        Event.findOneAndUpdate(
+//            {event_id: event.event_id},
+//            event.toObject(),
+//            {upsert: false}, function(err2, data2){
+//                if (err2) {
+//                    console.log('Event.findOneAndUpdate error:', event.event_id, err2)
+//                }
+//            });
     }
 //    else {
 //        console.log("calcScores no fullModel present ", event.event_id);
@@ -377,9 +384,9 @@ module.exports = function (app) {
         }); // clear all first
     });
 
-    app.get('/api/init', function (req, res) {
+    app.get('/api/initTeams', function (req, res) {
         fetchTeamData();
-        console.log('init app.get2');
+        console.log('initTeams app.get2');
         res.send('done')
     });
 
@@ -416,8 +423,8 @@ module.exports = function (app) {
         getEvents(res);
     });
 
-    app.get('/api/updateCompletedEvents', function (req, res) {
-        console.log('updateCompletedEvents');
+    app.get('/api/boxScoreForCompleted', function (req, res) {
+        console.log('boxScoreForCompleted');
 
         var now = moment().subtract(10, 'hours');
         Event.find({},function (err, events) {
@@ -447,7 +454,7 @@ module.exports = function (app) {
 
                     }
                 }
-                //console.log('updateCompletedEvents ',event.event_id, event.event_start_date_time);
+                //console.log('boxScoreForCompleted ',event.event_id, event.event_start_date_time);
             });
             queuedFetchEventDetail();
 
