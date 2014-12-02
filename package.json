@@ -1,7 +1,7 @@
 {
-  "name"         : "node-todo",
-  "version"      : "0.0.0",
-  "description"  : "Simple todo application.",
+  "name"         : "gameday",
+  "version"      : "0.0.1",
+  "description"  : "find the best nba game of the day",
   "main"         : "server.js",
   "author"       : "Scotch",
   "dependencies" : {
@@ -13,7 +13,7 @@
 
     "moment-timezone" : "~0.2.5",
     "sprintf"         : "~0.1.4",
-    "twit"            : "~1.1.14",
-    "underscore"      : "1.1.18"
+    "twit"            : "~1.1.18",
+    "underscore"      : "1.7.0"
   }
 }
