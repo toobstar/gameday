@@ -159,6 +159,15 @@ angular.module('teamController', [])
                 });
         };
 
+        $scope.twitterSearch = function() {
+            $scope.loading = true;
+            console.log('twitterSearch ');
+            Teams.twitterSearch()
+                .success(function(data) {
+                    $scope.loading = false;
+                });
+        };
+
 
 
 	}]);

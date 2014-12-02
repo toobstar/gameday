@@ -7,6 +7,15 @@ var moment = require('moment-timezone');
 var sprintf = require('sprintf').sprintf;
 var zlib = require('zlib');
 var _ = require("underscore");
+var Twit = require('twit');
+
+
+var T = new Twit({
+    consumer_key:         'zXituFczFnvzLGPmPWy0vYdVu'
+    , consumer_secret:      'AgASPXspOSFPs0Js3ASmDEwCezjt4GnyYSojLIdbK6J5O0oQ41'
+    , access_token:         '2911388558-faOOMDjqhtFOYiLjyT1GpIfqSPwPrSFIBYMANLm'
+    , access_token_secret:  'JmX1ytCsNQb6OXmSa2poPX6GanwwxLIHrPTcHTqTIgnZW'
+})
 
 
 var apiCallInProgress = false;
@@ -78,7 +87,7 @@ var processEventDetailResults = function(content, eventId) {
         eventDetail,
         {upsert: true}, function(err, data){
             console.log('Event.findOneAndUpdate (update) result', err)
-            processEvent(data);
+            calcScores(data);
         });
 }
 
@@ -151,7 +160,7 @@ function fetchData(method,params,resultProcessor, inputId) {
             if (res.statusCode !== 200) {
                 // handle error...
                 console.warn("Server did not return a 200 response!\n" + chunks.join(''));
-                process.exit(1);
+                //process.exit(1);
             }
             encoding = res.headers['content-encoding'];
             if (encoding === 'gzip') {
@@ -159,7 +168,7 @@ function fetchData(method,params,resultProcessor, inputId) {
                 zlib.gunzip(buffer, function (err, decoded) {
                     if (err) {
                         console.warn("Error trying to decompress data: " + err.message);
-                        process.exit(1);
+                        //process.exit(1);
                     }
                     resultProcessor(decoded, inputId);
                 });
@@ -169,7 +178,7 @@ function fetchData(method,params,resultProcessor, inputId) {
         });
     }).on('error', function (err) {
             console.warn("Error trying to contact server: " + err.message);
-            process.exit(1);
+            //process.exit(1);
         });
 }
 
@@ -250,11 +259,11 @@ function getCompletedEvents(res) {
     });
 };
 
-function processEvent(event) {
+function calcScores(event) {
 
     if (event.fullModel && event.fullModel.home_period_scores && event.fullModel.away_period_scores) {
 
-        console.log("processEvent fullModel present ", event.event_id);
+        console.log("calcScores fullModel present ", event.event_id);
 
         var hps = event.fullModel.home_period_scores;
         var aps = event.fullModel.away_period_scores;
@@ -266,6 +275,11 @@ function processEvent(event) {
         var homeWonQ2 = hps[1] > aps[1];
         var homeWonQ3 = hps[2] > aps[2];
         var homeWonQ4 = hps[3] > aps[3];
+
+        var leadChanges = 0;
+        if (homeWonQ1 != homeWonQ2) leadChanges++;
+        if (homeWonQ2 != homeWonQ3) leadChanges++;
+        if (homeWonQ3 != homeWonQ4) leadChanges++;
 
         var q1Dif = Math.abs(hps[0]-aps[0]);
         var q2Dif = Math.abs(hps[1]-aps[1]);
@@ -283,12 +297,21 @@ function processEvent(event) {
             var scoreOtDif = Math.max((5-otDif),3);
             scoreDif += scoreOtDif;
 
+            var homeWonOt1 = hps[4] > aps[4];
+            if (homeWonOt1 != homeWonQ4) leadChanges++;
+
             if (hps.length > 5) { // OT2
                 otDif = Math.abs(hps[5]-aps[5]);
                 scoreOtDif = Math.max((5-otDif),3);
                 scoreDif += scoreOtDif;
+
+                var homeWonOt2 = hps[4] > aps[4];
+                if (homeWonOt2 != homeWonOt1) leadChanges++;
             }
         }
+
+        scoreDif = scoreDif + (leadChanges*3);
+        console.log("leadChanges " + leadChanges + " adding " + (leadChanges*3) + " scoreDif now: " + scoreDif);
 
 //        console.log("hps",homeWonQ1,homeWonQ2,homeWonQ3,homeWonQ4);
 //        console.log("scoreDif",scoreDif);
@@ -297,19 +320,21 @@ function processEvent(event) {
         var totalDifference = (q1Dif+q2Dif+q3Dif+q4Dif);
         var finalDifference = q4Dif;
 
-        var leadChanges = 0;
-        if (homeWonQ1 != homeWonQ2) leadChanges++;
-        if (homeWonQ2 != homeWonQ3) leadChanges++;
-        if (homeWonQ3 != homeWonQ4) leadChanges++;
-
 //        console.log("leadChanges",leadChanges);
 //        console.log("totalDifference",totalDifference);
 //        console.log("finalDifference",finalDifference);
 
         event.pointsTotalDiff = totalDifference;
         event.pointsFinalDiff = finalDifference;
-        event.scorePointsDiff = scoreDif;
         event.leadChanges = leadChanges;
+        event.pointsBasedScore = scoreDif;
+
+        if (scoreDif > 15)
+            event.pointsBasedRating = 'A';
+        else if (scoreDif > 10)
+            event.pointsBasedRating = 'B';
+        else
+            event.pointsBasedRating = 'C';
 
         Event.findOneAndUpdate(
             {event_id: event.event_id},
@@ -321,13 +346,23 @@ function processEvent(event) {
             });
     }
 //    else {
-//        console.log("processEvent no fullModel present ", event.event_id);
+//        console.log("calcScores no fullModel present ", event.event_id);
 //    }
 }
 
 module.exports = function (app) {
 
     // api ---------------------------------------------------------------------
+
+
+
+    app.get('/api/twitterSearch', function (req, res) {
+        T.get('search/tweets', {
+            q: 'GSW ORL since:2014-11-26 until:2014-11-28', count: 100 }, function(err, data, response) {
+                console.log(data)
+        })
+        res.send('done')
+    });
 
     app.get('/api/clearAll', function (req, res) {
         Team.remove({}, function (err) {
@@ -405,6 +440,7 @@ module.exports = function (app) {
 
                     if (event.fullModel) {
                         console.log('before now already loaded',event.event_start_date_time);
+                        calcScores(event);
                     }
                     else {
                         console.log('XXX before now not yet loaded',event.event_start_date_time);
@@ -431,7 +467,7 @@ module.exports = function (app) {
                 if (err) {
                     return "error"
                 }
-                processEvent(event);
+                calcScores(event);
             });
 
 

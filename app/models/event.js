@@ -11,7 +11,8 @@ module.exports = mongoose.model('Event', {
 
     pointsTotalDiff : {type : String, default: ''},
     pointsFinalDiff : {type : String, default: ''},
-    scorePointsDiff : {type : String, default: ''},
+    pointsBasedScore : {type : String, default: ''},
+    pointsBasedRating : {type : String, default: ''},
     leadChanges : {type : String, default: ''}
 
 

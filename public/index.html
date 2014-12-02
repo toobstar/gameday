@@ -1,25 +1,30 @@
 <!doctype html>
-
-<!-- ASSIGN OUR ANGULAR MODULE -->
-<html ng-app="scotchTeam">
+<html ng-app="gameDay">
 <head>
-	<!-- META -->
 	<meta charset="utf-8">
 	<meta name="viewport" content="width=device-width, initial-scale=1"><!-- Optimize mobile viewport -->
-
 	<title>Which is the best NBA game to watch</title>
 
-	<!-- SCROLLS -->
+    <link href='http://fonts.googleapis.com/css?family=Ubuntu' rel='stylesheet' type='text/css'>
 	<link rel="stylesheet" href="//netdna.bootstrapcdn.com/bootstrap/3.0.0/css/bootstrap.min.css"><!-- load bootstrap -->
 	<link rel="stylesheet" href="//netdna.bootstrapcdn.com/font-awesome/4.0.3/css/font-awesome.min.css">
+
 	<style>
 		html 					{ overflow-y:scroll; }
-		body 					{ padding-top:50px; }
-		#team-list 				{ margin-bottom:30px; }
-		#team-form 	 			{ margin-bottom:50px; }
+		body 					{
+            padding-top:50px;
+            background-image:   url('/img/clipsfloor.png');
+            background-repeat:  repeat;
+        }
 
-        .blueText               {color:blue}
-        .redText                {color:red}
+        .pageHeader {
+            background-image:   url('/img/green.jpg');
+            background-repeat:  repeat;
+            color:  darkorange;
+        }
+        .pageHeaderTxt {
+            font-family: 'Ubuntu', sans-serif;
+        }
 
         .eveContainer .eve {
             display: inline-block;
@@ -29,7 +34,8 @@
             box-shadow: 0 -60px 60px -60px rgba(0,0,0,.1) inset;
             box-sizing: border-box;
             border-radius: 3px;
-
+            background: rgba(102, 102, 102, 0.4);
+            color:white;
             width: 22%;
             width: -webkit-calc(25% - 20px);
             width: -moz-calc(25% - 20px);
@@ -44,7 +50,7 @@
             font-size: 18px;
             color: #334;
             text-shadow: 1px 1px 0 #fff;
-            background: rgba(250,250,250,.9);
+            background: rgba(240, 240,240,.6);
             border-radius: 2px 2px 0 0;
         }
 
@@ -62,42 +68,45 @@
         }
 
 
-
 	</style>
 
     <script src="//ajax.googleapis.com/ajax/libs/jquery/1.8.3/jquery.min.js"></script>
 	<script src="//ajax.googleapis.com/ajax/libs/angularjs/1.2.16/angular.min.js"></script><!-- load angular -->
     <script src="//cdnjs.cloudflare.com/ajax/libs/masonry/3.1.5/masonry.pkgd.min.js"></script>
 
+    <!--<script src="js/lib/jquery.min.js"></script>-->
+    <!--<script src="js/lib/angular.min.js"></script>-->
+    <!--<script src="js/lib/masonry.pkgd.min.js"></script>-->
+
 	<script src="js/controllers/main.js"></script> <!-- load up our controller -->
 	<script src="js/services/teams.js"></script> <!-- load our team service -->
 	<script src="js/core.js"></script> <!-- load our main application -->
 
 </head>
-<!-- SET THE CONTROLLER -->
 <body ng-controller="mainController">
 	<div class="container">
 
-		<div class="jumbotron text-center">
-			<h1>Ratings<span class="label label-info"></span></h1>
+		<div class="jumbotron text-center pageHeader" onclick="setImgBg();">
+			<h1 class="pageHeaderTxt">NBA game of the day<span class="label label-info"></span></h1>
 		</div>
 
 		<div class="row">
             <div>
-                Show Team
-                <select ng-model="currentTeam" ng-options="team.full_name for team in teams">
-                    <option value="">-- choose team --</option>
+                <select ng-model="currentTeam" ng-options="team.full_name for team in teams" style="margin-left:9px">
+                    <option value=""> Team </option>
                 </select>
             </div>
             <div class="eveContainer">
                 <div class="eve" ng-repeat="event in completedEvents | filter:matchTeam | orderBy:'event_start_date_time':true | limitTo:eventCount" on-last-repeat>
                     <div class="title">
-                        {{teamsById[event.away_team_id].full_name}} &#64;
+                        {{teamsById[event.away_team_id].full_name}}
+                        <img ng-src="img/logos/{{teamsById[event.away_team_id].abbreviation}}.gif" alt="" style="max-height: 40px"/>
+                        &#64; <br/>
                         {{teamsById[event.home_team_id].full_name}}
+                        <img ng-src="img/logos/{{teamsById[event.home_team_id].abbreviation}}.gif" alt="" style="max-height: 40px"/>
                     </div>
-                    <div class="summary">
-                        <!--leadChanges {{event.leadChanges}} <br/>-->
-                        Rating (points) {{event.scorePointsDiff}}
+                    <div class="summary" title="{{event.pointsBasedScore}}">
+                        Rating {{event.pointsBasedRating}}
                     </div>
                     <div class="type">
                         {{event.event_start_date_time | date:'mediumDate'}}
@@ -111,64 +120,33 @@
             </div>
 		</div>
 
-
-        <br/><br/><br/>
-		<div class="row">
-			<!--<div class="col-lg-6">-->
-                <!--By team:-->
-                <!--<span ng-repeat="team in teams" ng-click="selectTeam(team.team_id)" ng-class="{blueText:team==currentTeam}">-->
-                    <!--{{ team.full_name }} |-->
-                <!--</span>-->
-			<!--</div>-->
-            <div class="col-lg-6">
-
-                <div ng-repeat="team in teams" ng-show="team == currentTeam">
-                    <div ng-repeat="event in events | orderBy:'event_start_date_time':false"
-                         ng-if="event.event_status=='completed' && event.event_id.indexOf(team.team_id)>-1"
-                         ng-class="{blueText:event.event_status=='scheduled',redText:event.event_status=='completed'}">
-                        <span ng-click="updateEvent(event.event_id)">update</span>
-                        <span ng-click="processEvent(event.event_id)">process</span>
-                        {{teamsById[event.away_team_id].full_name}} @
-                        {{teamsById[event.home_team_id].full_name}} on
-                        {{event.event_start_date_time | date:'mediumDate'}}
-                        <!--{{event.fullModel.home_period_scores}}-->
-                        <!--{{event.fullModel.away_period_scores}}-->
-                        -
-                        {{event.pointsTotalDiff}} -
-                        {{event.pointsFinalDiff}} -
-                        {{event.leadChanges}} -
-                        {{event.scorePointsDiff}}
-                        <!--<div ng-repeat="stat in event.fullModel.away_stats">-->
-                            <!--{{stat.display_name}} {{stat.points}},-->
-                        <!--</div>-->
-                    </div>
-                </div>
-
-                <p class="text-center" ng-show="loading">
-                    <span class="fa fa-spinner fa-spin fa-3x"></span>
-                </p>
-
-            </div>
-		</div>
-        <div>
-            <br/><br/><br/>
-            Admin <br/>
-            <span ng-click="clearAll()">Clear everything</span> |
-            <span ng-click="init()">Fetch teams</span> |
-            <span ng-click="initAllEvents()">Fetch Games</span> |
-            <span ng-click="updateCompletedEvents()">Process finished games</span>
-
-            <!--<div>-->
-                <!--Fetch games for team:-->
-                <!--<span ng-repeat="team in teams" ng-click="initEvents(team.team_id)">-->
-                    <!--{{ team.full_name }}-->
-                <!--</span>-->
-            <!--</div>-->
-        </div>
-
 	</div>
-
     <script>
+
+        var imgArray = [];
+        imgArray.push('/img/green.jpg');
+        imgArray.push('/img/green2.jpg');
+        imgArray.push('/img/green3.jpg');
+        imgArray.push('/img/green4.jpg');
+        imgArray.push('/img/jump.jpg');
+        imgArray.push('/img/bledsoe.jpg');
+
+        var psnArray = [];
+        psnArray.push('center right');
+        psnArray.push('center left');
+        psnArray.push('top');
+        psnArray.push('bottom');
+        psnArray.push('top right');
+        psnArray.push('bottom left');
+
+        function setImgBg() {
+            var idxImg = Math.floor(Math.random() * 5);
+            var idxPos = Math.floor(Math.random() * 6);
+            $('.pageHeader').css('background-position','url(' + psnArray[idxPos] + ')');
+            $('.pageHeader').css('background-image','url(' + imgArray[idxImg] + ')');
+        }
+        setInterval(function(){ setImgBg(); }, 5000);
+
         (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
             (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
                 m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
@@ -176,6 +154,5 @@
         ga('create', 'UA-57143956-1', 'auto');
         ga('send', 'pageview');
     </script>
-
 </body>
 </html>

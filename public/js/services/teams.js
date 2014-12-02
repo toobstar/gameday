@@ -44,6 +44,11 @@ angular.module('teamService', [])
 			},
 			delete : function(id) {
 				return $http.delete('/api/teams/' + id);
-			}
+			},
+            twitterSearch : function() {
+                return $http.get('/api/twitterSearch');
+            }
+
+
 		}
 	}]);
