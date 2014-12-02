@@ -340,7 +340,7 @@ function calcScores(event) {
             event.toObject(),
             {upsert: false}, function(err2, data2){
                 if (err2) {
-                    console.log('Event.findOneAndUpdate error:', err2)
+                    console.log('Event.findOneAndUpdate error:', event.event_id, err2)
                 }
             });
     }
