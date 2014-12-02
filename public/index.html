@@ -3,7 +3,7 @@
 <head>
 	<meta charset="utf-8">
 	<meta name="viewport" content="width=device-width, initial-scale=1">
-	<title>Which is the best NBA game to watch</title>
+	<title>NBA game of the day</title>
 
     <link rel="stylesheet" href="//fonts.typotheque.com/WF-021117-002395.css" type="text/css" />
 	<link rel="stylesheet" href="//netdna.bootstrapcdn.com/bootstrap/3.0.0/css/bootstrap.min.css"><!-- load bootstrap -->
@@ -51,12 +51,12 @@
             border-radius: 3px;
             background: rgba(102, 102, 102, 0.4);
             color:white;
-            width: 22%;
-            width: -webkit-calc(25% - 20px);
-            width: -moz-calc(25% - 20px);
-            width: -ms-calc(25% - 20px);
-            width: -o-calc(25% - 20px);
-            width: calc(25% - 20px);
+            /*width: 22%;*/
+            /*width: -webkit-calc(25% - 20px);*/
+            /*width: -moz-calc(25% - 20px);*/
+            /*width: -ms-calc(25% - 20px);*/
+            /*width: -o-calc(25% - 20px);*/
+            /*width: calc(25% - 20px);*/
         }
 
         .eveContainer .eve .title{
@@ -80,6 +80,31 @@
         }
         .eveContainer .eve .summary a{
             color: #0558c1;
+        }
+
+        .masonry,
+        .masonry .masonry-brick {
+            -webkit-transition-duration: 0.7s;
+            -moz-transition-duration: 0.7s;
+            -ms-transition-duration: 0.7s;
+            -o-transition-duration: 0.7s;
+            transition-duration: 0.7s;
+        }
+
+        .masonry {
+            -webkit-transition-property: height, width;
+            -moz-transition-property: height, width;
+            -ms-transition-property: height, width;
+            -o-transition-property: height, width;
+            transition-property: height, width;
+        }
+
+        .masonry .masonry-brick {
+            -webkit-transition-property: left, right, top;
+            -moz-transition-property: left, right, top;
+            -ms-transition-property: left, right, top;
+            -o-transition-property: left, right, top;
+            transition-property: left, right, top;
         }
 
 
@@ -117,6 +142,7 @@
                 </select>
             </div>
             <div class="eveContainer">
+
                 <div class="eve" ng-repeat="event in completedEvents | filter:matchTeam | orderBy:'event_start_date_time':true | limitTo:eventCount" on-last-repeat>
                     <div class="title">
                         {{teamsById[event.away_team_id].full_name}}
@@ -135,6 +161,15 @@
                 <div class="eve" ng-click="showMore()">
                     <div class="title" style="background-color: lightblue">
                         Show More
+                    </div>
+                </div>
+                <div class="eve" onclick="moreInfo()">
+                    <div class="title" style="background-color: lightgreen">
+                        More Info
+                    </div>
+                    <div class="summary" id="infoPanel" style="display: none">
+                        The rating is calculated automatically based on points difference and lead changes throughout the game.  It is intended to
+                        give an indication of how enjoyable the game will be without giving away the result.
                     </div>
                 </div>
             </div>
@@ -167,6 +202,11 @@
             ph.css('background-image','url(' + imgArray[idxImg] + ')');
         }
         setInterval(function(){ setImgBg(); }, 7000);
+
+        function moreInfo() {
+            $("#infoPanel").show();
+            setTimeout(function(){ $("#infoPanel").hide(); }, 15000);
+        }
 
         (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
             (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),

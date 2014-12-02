@@ -35,11 +35,13 @@ angular.module('teamController', [])
                         position: 'relative',
                         width: '100%'
                     },
-                    columnWidth: '.ele',
+                    columnWidth: '.eve',
                     gutter: 0,
-                    itemSelector: '.ele',
-                    transitionDuration: '.2s',
-                    isInitLayout: false
+                    itemSelector: '.eve',
+                    transitionDuration: '3s',
+                    //transitionDuration: '.2s',
+                    //isInitLayout: false,
+                    isAnimated: true
                 });
                 $container.masonry();
             });
@@ -48,8 +50,16 @@ angular.module('teamController', [])
         // local functions
 
         $scope.showMore = function() {
-            $scope.eventCount = $scope.eventCount + 13;
+            $scope.eventCount = $scope.eventCount + 3;
+            var $container = $('.blogTiles');
+            $container.masonry();
         }
+
+        $scope.$watch($scope.completedEvents, function(aaa,bbb) {
+            console.log("xx",$scope.completedEvents,aaa,bbb);
+            var $container = $('.blogTiles');
+            $container.masonry();
+        });
 
         $scope.matchTeam = function(event){
             var res1 = $scope.matchTeamById(event);
