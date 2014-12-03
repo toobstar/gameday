@@ -47,6 +47,9 @@ angular.module('teamService', [])
 			},
             twitterSearch : function() {
                 return $http.get('/api/twitterSearch');
+            },
+            twitterForCompleted : function() {
+                return $http.get('/api/twitterForCompleted');
             }
 
 

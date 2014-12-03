@@ -81,6 +81,7 @@ app.controller('mainController', ['$scope','$http','Teams', function($scope, $ht
 		$scope.eventCount = 10;
         $scope.currentTeam = null;
         $scope.currentRating = null;
+        $scope.currentChatter = 1000;
         $scope.currentRating = '';
         $scope.ratings = ["A","B","C"];
 
@@ -126,7 +127,8 @@ app.controller('mainController', ['$scope','$http','Teams', function($scope, $ht
         $scope.matchTeam = function(event){
             var res1 = $scope.matchTeamById(event);
             var res2 = $scope.matchTeamByRating(event);
-            return res1 && res2;
+            var res3 = $scope.matchTeamByChatter(event);
+            return res1 && res2 && res3;
         }
         $scope.matchTeamById = function(event){
             if (!$scope.currentTeam || !$scope.currentTeam.team_id)
@@ -151,6 +153,20 @@ app.controller('mainController', ['$scope','$http','Teams', function($scope, $ht
             return false;
         }
 
+        $scope.matchTeamByChatter = function(event){
+            if ($scope.currentChatter == 1000)
+                return true;
 
+            if (event.twitterScore && event.twitterScore > $scope.currentChatter)
+                return true;
 
-	}]);
+            return false;
+        }
+}]);
+
+window.onresize = _.debounce(function(){
+        console.log('resize');
+        var $container = $('.eveContainer');
+        $container.masonry();
+    }
+, 100);

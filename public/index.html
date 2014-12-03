@@ -6,7 +6,7 @@
 	<title>NBA game of the day</title>
 
     <link rel="stylesheet" href="//fonts.typotheque.com/WF-021117-002395.css" type="text/css" />
-	<link rel="stylesheet" href="//netdna.bootstrapcdn.com/bootstrap/3.0.0/css/bootstrap.min.css"><!-- load bootstrap -->
+	<link rel="stylesheet" href="//netdna.bootstrapcdn.com/bootstrap/3.0.0/css/bootstrap.min.css">
 	<link rel="stylesheet" href="//netdna.bootstrapcdn.com/font-awesome/4.0.3/css/font-awesome.min.css">
 
 	<style>
@@ -41,7 +41,51 @@
             word-wrap: break-word;
         }
 
-        .eveContainer .eve {
+        @media (min-width: 701px) {
+            .eve,.blk {
+                width: 22%;
+                width: -webkit-calc(25% - 20px);
+                width: -moz-calc(25% - 20px);
+                width: -ms-calc(25% - 20px);
+                width: -o-calc(25% - 20px);
+                width: calc(25% - 20px);
+            }
+        }
+
+        @media (min-width: 601px) and (max-width: 700px) {
+            .m1000 .blogTiles .ele{
+                width: 30%;
+                width: -webkit-calc(33.33% - 20px);
+                width: -moz-calc(33.33% - 20px);
+                width: -ms-calc(33.33% - 20px);
+                width: -o-calc(33.33% - 20px);
+                width: calc(33.33% - 20px);
+            }
+        }
+
+        @media (min-width: 501px) and (max-width: 600px) {
+            .m800 .blogTiles .ele{
+                width: 45%;
+                width: -webkit-calc(50% - 20px);
+                width: -moz-calc(50% - 20px);
+                width: -ms-calc(50% - 20px);
+                width: -o-calc(50% - 20px);
+                width: calc(50% - 20px);
+            }
+        }
+
+        @media (max-width: 500px) {
+            .eve,.blk {
+                width: 95%;
+                width: -webkit-calc(100% - 20px);
+                width: -moz-calc(100% - 20px);
+                width: -ms-calc(100% - 20px);
+                width: -o-calc(100% - 20px);
+                width: calc(100% - 20px);
+            }
+        }
+
+        .eve,.blk {
             display: inline-block;
             vertical-align: top;
             margin: 10px;
@@ -51,15 +95,9 @@
             border-radius: 3px;
             background: rgba(102, 102, 102, 0.4);
             color:white;
-            width: 22%;
-            width: -webkit-calc(25% - 20px);
-            width: -moz-calc(25% - 20px);
-            width: -ms-calc(25% - 20px);
-            width: -o-calc(25% - 20px);
-            width: calc(25% - 20px);
         }
 
-        .eveContainer .eve .title{
+        .eve .title,.blk .title{
             width: 100%;
             padding: 10px;
             font-size: 18px;
@@ -69,17 +107,14 @@
             border-radius: 2px 2px 0 0;
         }
 
-        .eveContainer .eve .type{
+        .eve .type,.blk .type{
             font-size: 10px;
             padding: 0 10px 10px;
         }
-        .eveContainer .eve .summary{padding: 15px 10px;font-size:1.2em;}
-        .eveContainer .eve .summary p{
+        .eve .summary,.blk .summary{padding: 15px 10px;font-size:1.2em;}
+        .eve .summary p,.blk .summary p {
             margin: 1em 0;
             line-height: 120%;
-        }
-        .eveContainer .eve .summary a{
-            color: #0558c1;
         }
 
 	</style>
@@ -117,6 +152,26 @@
                     <option value=""> Rating </option>
                     <option ng-repeat="rating in ratings" value="{{rating}}">{{rating}}</option>
                 </select>
+                <!--<select ng-model="currentChatter" style="margin-left:9px" >-->
+                    <!--<option value="1000"> Chatter </option>-->
+                    <!--<option value="1"> Lots </option>-->
+                <!--</select>-->
+
+                <div class="blk" ng-click="showMore()">
+                    <div class="title" style="background-color: lightblue">
+                        More Games
+                    </div>
+                </div>
+                <div class="blk" onclick="moreInfo()">
+                    <div class="title" style="background-color: lightgreen">
+                        Info
+                    </div>
+                    <div class="summary" id="infoPanel" style="display: none">
+                        The rating is calculated automatically based on points difference and lead changes throughout the game.  It is intended to
+                        give an indication of how enjoyable the game will be without giving away the result.
+                    </div>
+                </div>
+
             </div>
 
             <div class="eveContainer"
@@ -125,7 +180,6 @@
                             transitionDuration: '0.4s'
                         }"
                     >
-
                 <div class="eve" ng-repeat="event in completedEvents | filter:matchTeam | orderBy:'event_start_date_time':true | limitTo:eventCount" custom-directive masonry-item-dir>
                     <div class="title">
                         {{teamsById[event.away_team_id].full_name}}
@@ -136,30 +190,13 @@
                     </div>
                     <div class="summary" title="{{event.pointsBasedScore}}">
                         Rating {{event.pointsBasedRating}}
+                        <span ng-if="event.twitterScore"><br/>Chatter {{event.twitterScore}}</span>
                     </div>
                     <div class="type">
                         {{event.event_start_date_time | date:'mediumDate'}}
                     </div>
                 </div>
-
             </div>
-            <div class="eveContainer">
-                <div class="eve" ng-click="showMore()">
-                    <div class="title" style="background-color: lightblue">
-                        More Games
-                    </div>
-                </div>
-                <div class="eve" onclick="moreInfo()">
-                    <div class="title" style="background-color: lightgreen">
-                        Info
-                    </div>
-                    <div class="summary" id="infoPanel" style="display: none">
-                        The rating is calculated automatically based on points difference and lead changes throughout the game.  It is intended to
-                        give an indication of how enjoyable the game will be without giving away the result.
-                    </div>
-                </div>
-            </div>
-
 		</div>
 
 	</div>

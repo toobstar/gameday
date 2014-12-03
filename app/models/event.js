@@ -13,7 +13,8 @@ module.exports = mongoose.model('Event', {
     pointsFinalDiff : {type : String, default: ''},
     pointsBasedScore : {type : String, default: ''},
     pointsBasedRating : {type : String, default: ''},
-    leadChanges : {type : String, default: ''}
+    leadChanges : {type : String, default: ''},
+    twitterScore : {type : Number, default: ''}
 
 
 });

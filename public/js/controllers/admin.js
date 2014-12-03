@@ -72,6 +72,16 @@ app.controller('adminController', ['$scope','$http','Teams', '$location', functi
                 });
         };
 
+        $scope.twitterForCompleted = function() {
+            $scope.loading = true;
+            console.log('twitterForCompleted ');
+            Teams.twitterForCompleted()
+                .success(function(data) {
+                    $scope.loading = false;
+                });
+        };
+
+
 //        $scope.funcCalled = null;
 //        var initAction = ($location.search()).target;
 //        console.log("initAction", initAction);

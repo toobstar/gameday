@@ -114,6 +114,133 @@ var queuedFetchEventDetail = function() {
     }
 };
 
+var lookup = {};
+lookup['atlanta-hawks']='#Hawks,#ATLHawks';
+lookup['boston-celtics']='#Celtics';
+lookup['brooklyn-nets']='#Bobcats';
+lookup['charlotte-hornets']='#Bulls';
+lookup['chicago-bulls']='#Cavs, #Cavaliers';
+lookup['cleveland-cavaliers']='#Mavs';
+lookup['dallas-mavericks']='#Nuggets';
+lookup['denver-nuggets']='#Pistons';
+lookup['detroit-pistons']='#Warriors,#GSWarriors';
+lookup['golden-state-warriors']='#Rockets';
+lookup['houston-rockets']='#Pacers';
+lookup['indiana-pacers']='#Clippers';
+lookup['los-angeles-clippers']='#Lakers';
+lookup['los-angeles-lakers']='#Grizzlies';
+lookup['memphis-grizzlies']='#MiamiHeat';
+lookup['miami-heat']='#Bucks';
+lookup['milwaukee-bucks']='#TWolves, #Timberwolves';
+lookup['minnesota-timberwolves']='#Nets';
+lookup['new-orleans-pelicans']='#Hornets';
+lookup['new-york-knicks']='#Knicks';
+lookup['oklahoma-city-thunder']='#okcthunder,#OklahomaCityThunder';
+lookup['orlando-magic']='#OrlandoMagic, #Magic';
+lookup['philadelphia-76ers']='#76ers';
+lookup['phoenix-suns']='#Suns';
+lookup['portland-trail-blazers']='#TrailBlazers,#Blazers';
+lookup['sacramento-kings']='#NBAKings';
+lookup['san-antonio-spurs']='#GoSpursGo,#Spurs';
+lookup['toronto-raptors']='#Raptors';
+lookup['utah-jazz']='#UtahJazz';
+lookup['washington-wizards']='#Wizards';
+
+
+
+
+var eventIdTwitterQueue = [];
+var queuedFetchEventTwitterDetail = function() {
+    console.log('queuedFetchEventTwitterDetail ',eventIdTwitterQueue);
+    if (eventIdTwitterQueue.length > 0) {
+        if (apiCallInProgress == false) {
+            apiCallInProgress = true;
+            var eventId = eventIdTwitterQueue.shift();
+            console.log('queuedFetchEventTwitterDetail scheduled ',eventId);
+            fetchTwitterDetail(eventId);
+        }
+
+        console.log('queuedFetchEventTwitterDetail waiting 8s - queued: ' + eventIdTwitterQueue.length);
+        setTimeout(function(){queuedFetchEventTwitterDetail()}, 8000);
+    }
+};
+
+function fetchTwitterDetail(eventId) {
+
+    Event.findOne(
+        {event_id: eventId},
+        function(err, event){
+            console.log('fetchTwitterDetail Event.findOne result', err, eventId)
+            if (err) {
+                return "error"
+            }
+
+            //var searchQuery = '#Warriors #OrlandoMagic  since:2014-11-26 until:2014-11-28';
+
+            var awayTags = lookup[event.away_team_id];
+            var homeTags = lookup[event.home_team_id];
+
+            var finishDate = moment(event.event_start_date_time).add(2, 'days');
+
+            var searchParams = {};
+            searchParams['count'] = 100;
+            searchParams['until'] = finishDate.format('YYYY-MM-DD');
+
+            event.twitterScore = 0;
+
+            _.each(awayTags.split(','),function(awayTag) {
+                console.log('awayTag',awayTag);
+                searchParams['q'] = encodeURIComponent(awayTag);
+                askTwitter(event, searchParams);
+            });
+
+            _.each(homeTags.split(','),function(homeTag) {
+                console.log('homeTag',homeTag);
+                searchParams['q'] = encodeURIComponent(homeTag);
+                askTwitter(event, searchParams);
+            });
+
+            _.each(awayTags.split(','),function(awayTag) {
+                _.each(homeTags.split(','),function(homeTag) {
+                    var searchQuery = awayTag + ' ' + homeTag;
+                    console.log('tags',searchQuery);
+                    searchParams['q'] = encodeURIComponent(searchQuery);
+                    askTwitter(event, searchParams);
+                });
+            });
+
+        });
+}
+
+function askTwitter(event, searchParams) {
+    console.log('doing twitter search for query: ',searchParams);
+    T.get('search/tweets', searchParams, function(err, data, response) {
+        apiCallInProgress = false;
+        if (err) {
+            console.log('error with twitter search', searchParams, err);
+        }
+        else {
+
+            _.each(data.statuses,function(tweet) {
+                console.log("---");
+                console.log("---");
+                console.log("tweet: ",tweet.created_at);
+                console.log("tweet: ",tweet.text );
+                console.log("---");
+                console.log("---");
+            });
+
+
+//            console.log('0- setting score for '+event.event_id, event.twitterScore, searchParams, data.statuses.length);
+//            event.twitterScore = parseInt(event.twitterScore) + parseInt(data.statuses.length);
+//            console.log('1- setting score for '+event.event_id, event.twitterScore);
+//            event.save();
+//            console.log("debug.. ",data);
+        }
+        //console.log("debug.. ",response);
+    })
+}
+
 function fetchEventDetail(eventId) {
     console.log('fetchEventDetail ', eventId);
     var method = 'nba/boxscore/'+eventId;
@@ -357,25 +484,70 @@ module.exports = function (app) {
     // api ---------------------------------------------------------------------
 
     app.get('/api/twitterSearch', function (req, res) {
+
+        var searchQuery = '#Warriors #OrlandoMagic  since:2014-11-26 until:2014-11-28';
+
         T.get('search/tweets', {
-            q: 'GSW ORL since:2014-11-26 until:2014-11-28', count: 100 }, function(err, data, response) {
-                console.log(data)
+            q: searchQuery, count: 100 }, function(err, data, response) {
+                //console.log(data);
+                console.log(searchQuery, data.statuses.length);
         })
         res.send('done')
     });
+
+
+    app.get('/api/twitterForCompleted', function (req, res) {
+        console.log('twitterForCompleted');
+
+        var now = moment().subtract(10, 'hours');
+        Event.find({},function (err, events) {
+
+
+            if (err) {
+                console.log("error", err);
+                res.send(err)
+                return;
+            }
+
+            _.each(events,function(event){
+
+                var eventDate = moment(event.event_start_date_time);
+                if (eventDate.isAfter(now)) {
+                    console.log('after now ',event.event_start_date_time);
+                }
+                else {
+
+                    if (event.twitterScore && event.twitterScore > 50) {  // TODO redo while testing
+                        console.log('already loaded',event.event_id,event.twitterScore);
+                    }
+                    else {
+                        console.log('not yet loaded',event.event_id);
+                        if (eventIdTwitterQueue.length < 10) {  // TODO limit while testing
+                            eventIdTwitterQueue.push(event.event_id);
+                        }
+                    }
+                }
+            });
+
+            queuedFetchEventTwitterDetail();
+
+            res.send('done')
+        });
+    });
+
 
     app.get('/api/clearAll', function (req, res) {
         Team.remove({}, function (err) {
             console.log('clearAll teams ');
             if (err)
                 res.send(err);
-        }); // clear all first
+        });
 
         Event.remove({}, function (err) {
             console.log('clearAll events ');
             if (err)
                 res.send(err);
-        }); // clear all first
+        });
     });
 
     app.get('/api/initTeams', function (req, res) {
@@ -475,21 +647,18 @@ module.exports = function (app) {
 
     app.get('/api/teams', function (req, res) {
 
-        // use mongoose to get all todos in the database
         console.log('/api/teams');
         getTeams(res);
     });
 
     app.get('/api/completedEvents', function (req, res) {
 
-        // use mongoose to get all todos in the database
         console.log('/api/completedEvents');
         getCompletedEvents(res);
     });
 
     app.get('/api/events', function (req, res) {
 
-        // use mongoose to get all todos in the database
         console.log('/api/events');
         getEvents(res);
     });
