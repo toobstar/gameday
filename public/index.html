@@ -145,10 +145,10 @@
 
 		<div class="row">
             <div>
-                <select ng-model="currentTeam" ng-options="team.full_name for team in teams" style="margin-left:9px">
+                <select ng-model="currentTeam" ng-options="team.full_name for team in teams" style="margin-left:9px;margin-top:22px">
                     <option value=""> Team </option>
                 </select>
-                <select ng-model="currentRating" style="margin-left:9px" >
+                <select ng-model="currentRating" style="margin-left:9px;margin-top:22px" >
                     <option value=""> Rating </option>
                     <option ng-repeat="rating in ratings" value="{{rating}}">{{rating}}</option>
                 </select>
