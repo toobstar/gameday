@@ -10,14 +10,25 @@ var _ = require("underscore");
 var Twit = require('twit');
 
 
+if (process.env.TWITTER_KEY) {
+    TWITTER_CONS_KEY = process.env.TWITTER_CONS_KEY;
+    TWITTER_CONS_SECRET = process.env.TWITTER_CONS_SECRET;
+    TWITTER_ACCESS_TOKEN = process.env.TWITTER_ACCESS_TOKEN;
+    TWITTER_ACCESS_SECRET = process.env.TWITTER_ACCESS_SECRET;
+}
+else {
+    console.warn("missing config");
+    process.exit(1);
+}
+
 var T = new Twit({
-    consumer_key:         'zXituFczFnvzLGPmPWy0vYdVu'
-    , consumer_secret:      'AgASPXspOSFPs0Js3ASmDEwCezjt4GnyYSojLIdbK6J5O0oQ41'
-    , access_token:         '2911388558-faOOMDjqhtFOYiLjyT1GpIfqSPwPrSFIBYMANLm'
-    , access_token_secret:  'JmX1ytCsNQb6OXmSa2poPX6GanwwxLIHrPTcHTqTIgnZW'
+    consumer_key:         TWITTER_CONS_KEY
+    , consumer_secret:      TWITTER_CONS_SECRET
+    , access_token:         TWITTER_ACCESS_TOKEN
+    , access_token_secret:  TWITTER_ACCESS_SECRET
 })
 
-
+var apiDelayBetweenCalls = 11000; // 6 calls/minute max
 var apiCallInProgress = false;
 
 var processTeamResults = function(content) {
@@ -46,9 +57,7 @@ var processEventResults = function(content) {
     events.forEach(function (event) {
         console.log('creating or updating: ',event);
         event.home_team_id=event.team.team_id;
-        //event.home_team_id=event.home_team.team_id;
         event.away_team_id=event.opponent.team_id;
-        //event.away_team_id=event.away_team.team_id;
         Event.findOneAndUpdate(
             {event_id: event.event_id},
             event,
@@ -56,8 +65,6 @@ var processEventResults = function(content) {
                 console.log('Event.findOneAndUpdate result', err, data)
                 calcScores(event);
             });
-
-        //Event.create(event);
     });
 }
 
@@ -72,7 +79,7 @@ function fetchTeamEvents() {
         }
 
         console.log('fetchTeamEvents waiting 11s - queued: ' + teamIdQueue.length);
-        setTimeout(function(){fetchTeamEvents()}, 11000);
+        setTimeout(function(){fetchTeamEvents()}, apiDelayBetweenCalls);
     }
 }
 
@@ -103,7 +110,7 @@ var queuedFetchEventDetail = function() {
         }
 
         console.log('queuedFetchEventDetail waiting 11s - queued: ' + eventIdQueue.length);
-        setTimeout(function(){queuedFetchEventDetail()}, 11000);
+        setTimeout(function(){queuedFetchEventDetail()}, apiDelayBetweenCalls);
     }
 };
 
@@ -115,14 +122,15 @@ function fetchEventDetail(eventId) {
 
 function fetchData(method,params,resultProcessor, inputId) {
 
-    // configure: rhc env-set NBA_ACCESS_TOKEN=929daf54-c374-4951-a2e3-ccc4e79eb6ce -a gd
-    var ACCESS_TOKEN = '929daf54-c374-4951-a2e3-ccc4e79eb6ce';
-    // Replace with your access token
     if (process.env.NBA_ACCESS_TOKEN) {
         ACCESS_TOKEN = process.env.NBA_ACCESS_TOKEN;
     }
+    else {
+        console.warn("missing config");
+        process.exit(1);
+    }
 
-    var USER_AGENT = 'MyRobot/1.0 (toby.vidler@gmail.com)';
+    var USER_AGENT = 'MyRobot/1.0 (www.bestgametowatch.com)';
     var TIME_ZONE = 'America/New_York';
 
     // Set the API method, format, and any parameters
@@ -219,9 +227,9 @@ function getTeams(res) {
     console.log('getTeams');
     Team.find(function (err, teams) {
         console.log('Team.find');
-        // if there is an error retrieving, send the error. nothing after res.send(err) will execute
+        
         if (err)
-            res.send(err)
+            res.send(err); // if there is an error retrieving, send the error. nothing after res.send(err) will execute
 
         res.json(teams);
     });
@@ -231,9 +239,9 @@ function getEvents(res) {
     console.log('getEvents');
     Event.find(function (err, events) {
         console.log('Event.find');
-        // if there is an error retrieving, send the error. nothing after res.send(err) will execute
+        
         if (err)
-            res.send(err)
+            res.send(err);
 
         res.json(events);
     });
@@ -243,7 +251,7 @@ function getCompletedEvents(res) {
     console.log('getCompletedEvents');
     Event.find(function (err, events) {
         console.log('Event.find');
-        // if there is an error retrieving, send the error. nothing after res.send(err) will execute
+        
         if (err)
             res.send(err)
 
@@ -253,7 +261,7 @@ function getCompletedEvents(res) {
         _.each(events,function(event) {
             var eventDate = moment(event.event_start_date_time);   // need to confirm timezone situation..
             if (eventDate.isBefore(now)) {
-                event.fullModel = null;// clear full model to make object more light weight
+                event.fullModel = null;// clear full model to make object lighter weight for UI
                 completedEvents.push(event);
             }
         });
@@ -341,26 +349,12 @@ function calcScores(event) {
 
 
         event.save();
-        //event._id = null; // clear id to prevent:    errmsg: 'exception: Mod on _id not allowed',
-//        Event.findOneAndUpdate(
-//            {event_id: event.event_id},
-//            event.toObject(),
-//            {upsert: false}, function(err2, data2){
-//                if (err2) {
-//                    console.log('Event.findOneAndUpdate error:', event.event_id, err2)
-//                }
-//            });
     }
-//    else {
-//        console.log("calcScores no fullModel present ", event.event_id);
-//    }
 }
 
 module.exports = function (app) {
 
     // api ---------------------------------------------------------------------
-
-
 
     app.get('/api/twitterSearch', function (req, res) {
         T.get('search/tweets', {
@@ -395,7 +389,7 @@ module.exports = function (app) {
 
         Team.find(function (err, teams) {
             console.log('Team.find');
-            // if there is an error retrieving, send the error. nothing after res.send(err) will execute
+            
             if (err)
                 res.send(err)
 
@@ -429,7 +423,7 @@ module.exports = function (app) {
         var now = moment().subtract(10, 'hours');
         Event.find({},function (err, events) {
 
-            // if there is an error retrieving, send the error. nothing after res.send(err) will execute
+            
             if (err) {
                 console.log("error", err);
                 res.send(err)
@@ -445,11 +439,11 @@ module.exports = function (app) {
                 else {
 
                     if (event.fullModel) {
-                        console.log('before now already loaded',event.event_start_date_time);
+                        console.log('already loaded',event.event_start_date_time);
                         calcScores(event);
                     }
                     else {
-                        console.log('XXX before now not yet loaded',event.event_start_date_time);
+                        console.log('not yet loaded',event.event_start_date_time);
                         eventIdQueue.push(event.event_id);
 
                     }
@@ -459,7 +453,6 @@ module.exports = function (app) {
             queuedFetchEventDetail();
 
             res.send('done')
-//            res.json(events);
         });
     });
 
@@ -501,37 +494,8 @@ module.exports = function (app) {
         getEvents(res);
     });
 
-//    // create todo and send back all todos after creation
-//    app.post('/api/todos', function (req, res) {
-//
-//        // create a todo, information comes from AJAX request from Angular
-//        Todo.create({
-//            text: req.body.text,
-//            done: false
-//        }, function (err, todo) {
-//            if (err)
-//                res.send(err);
-//
-//            // get and return all the todos after you create another
-//            getTodos(res);
-//        });
-//
-//    });
-//
-//    // delete a todo
-//    app.delete('/api/todos/:todo_id', function (req, res) {
-//        Todo.remove({
-//            _id: req.params.todo_id
-//        }, function (err, todo) {
-//            if (err)
-//                res.send(err);
-//
-//            getTodos(res);
-//        });
-//    });
-
     // application -------------------------------------------------------------
     app.get('*', function (req, res) {
-        res.sendfile('./public/index.html'); // load the single view file (angular will handle the page changes on the front-end)
+        res.sendfile('./public/index.html');
     });
 };

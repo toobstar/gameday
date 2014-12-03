@@ -104,7 +104,7 @@ app.controller('mainController', ['$scope','$http','Teams', function($scope, $ht
                 $scope.completedEvents = data;
                 $scope.loading = false;
 
-                var $container = $('.blogTiles');
+                var $container = $('.eveContainer');
                 $container.masonry({
                     containerStyle:{
                         position: 'relative',
@@ -119,15 +119,9 @@ app.controller('mainController', ['$scope','$http','Teams', function($scope, $ht
 
         $scope.showMore = function() {
             $scope.eventCount = $scope.eventCount + 3;
-            var $container = $('.blogTiles');
+            var $container = $('.eveContainer');
             $container.masonry();
         }
-
-        $scope.$watch($scope.completedEvents, function(aaa,bbb) {
-            console.log("xx",$scope.completedEvents,aaa,bbb);
-            var $container = $('.blogTiles');
-            $container.masonry();
-        });
 
         $scope.matchTeam = function(event){
             var res1 = $scope.matchTeamById(event);
