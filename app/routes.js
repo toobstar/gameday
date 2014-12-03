@@ -10,7 +10,7 @@ var _ = require("underscore");
 var Twit = require('twit');
 
 
-if (process.env.TWITTER_KEY) {
+if (process.env.TWITTER_CONS_KEY) {
     TWITTER_CONS_KEY = process.env.TWITTER_CONS_KEY;
     TWITTER_CONS_SECRET = process.env.TWITTER_CONS_SECRET;
     TWITTER_ACCESS_TOKEN = process.env.TWITTER_ACCESS_TOKEN;
