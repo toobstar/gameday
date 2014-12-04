@@ -4,6 +4,12 @@ It does this by determining a rating for each game.  The rating is calculated au
 
 Hopefully I'll get to a point where I include other metrics such as social media chatter.  I'm sure other aspects would be helpful too.
 
-It was also created as an exercise to use the MEAN stack.  That is: MongoDB / Mongoose / Express / AngularJs / NodeJs.  Aka "full stack javascript".
+It was also created as an exercise to use the MEAN stack.  That is: MongoDB / Mongoose / Express / AngularJs / NodeJs.  A.k.a. "full stack javascript".
 
 It is currently running at http://www.bestgametowatch.com and is hosted on the OpenShift PAAS environment.
+
+To run this locally you can use a mac terminal command such as:
+
+    NBA_ACCESS_TOKEN=XXX TWITTER_ACCESS_SECRET=XXX TWITTER_ACCESS_TOKEN=XXX TWITTER_CONS_KEY=XXX TWITTER_CONS_SECRET=XXX node server
+
+You'll need all the relevant libs of course.
