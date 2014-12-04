@@ -3,14 +3,13 @@
   "version"      : "0.0.1",
   "description"  : "find the best nba game of the day",
   "main"         : "server.js",
-  "author"       : "Scotch",
+  "author"       : "toby vidler",
   "dependencies" : {
     "express"         : "~4.6.1",
     "mongoose"        : "~3.8.13",
     "morgan"          : "~1.1.1",
     "body-parser"     : "~1.4.3",
     "method-override" : "~2.1.1",
-
     "moment-timezone" : "~0.2.5",
     "sprintf"         : "~0.1.4",
     "twit"            : "~1.1.18",
