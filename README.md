@@ -5,3 +5,5 @@ It does this by determining a rating for each game.  The rating is calculated au
 Hopefully I'll get to a point where I include other metrics such as social media chatter.  I'm sure other aspects would be helpful too.
 
 It was also created as an exercise to use the MEAN stack.  That is: MongoDB / Mongoose / Express / AngularJs / NodeJs.  Aka "full stack javascript".
+
+It is currently running at http://www.bestgametowatch.com and is hosted on the OpenShift PAAS environment.
