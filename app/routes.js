@@ -477,6 +477,18 @@ function calcScores(event) {
 
         event.save();
     }
+
+    if (!event.finalScore && event.fullModel) {
+        if (Math.random() * 10 > 5) { // randomise order of score display
+            console.log("a) setting finalScore for ", event.event_id, event.finalScore);
+            event.finalScore = event.fullModel.away_totals.points + '/' + event.fullModel.home_totals.points;
+        }
+        else {
+            console.log("b) setting finalScore for ", event.event_id, event.finalScore);
+            event.finalScore = event.fullModel.home_totals.points + '/' + event.fullModel.away_totals.points;
+        }
+        event.save();
+    }
 }
 
 module.exports = function (app) {

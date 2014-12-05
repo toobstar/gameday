@@ -117,6 +117,8 @@
             line-height: 120%;
         }
 
+        .eve .note,.blk .note{padding: 0px 10px;font-size:0.8em;}
+
 	</style>
 
     <script src="//ajax.googleapis.com/ajax/libs/jquery/1.8.3/jquery.min.js"></script>
@@ -157,21 +159,6 @@
                     <!--<option value="1"> Lots </option>-->
                 <!--</select>-->
 
-                <div class="blk" ng-click="showMore()">
-                    <div class="title" style="background-color: lightblue">
-                        More Games
-                    </div>
-                </div>
-                <div class="blk" onclick="moreInfo()">
-                    <div class="title" style="background-color: lightgreen">
-                        Info
-                    </div>
-                    <div class="summary" id="infoPanel" style="display: none">
-                        The rating is calculated automatically based on points difference and lead changes throughout the game.  It is intended to
-                        give an indication of how enjoyable the game will be without giving away the result.
-                    </div>
-                </div>
-
             </div>
 
             <div class="eveContainer"
@@ -188,13 +175,34 @@
                         {{teamsById[event.home_team_id].full_name}}
                         <img ng-src="img/logos/{{teamsById[event.home_team_id].abbreviation}}.gif" alt="" style="max-height: 40px"/>
                     </div>
-                    <div class="summary" title="{{event.pointsBasedScore}}">
+                    <div class="summary" title="Exact Rating: {{event.pointsBasedScore}}">
                         Rating {{event.pointsBasedRating}}
                         <span ng-if="event.twitterScore"><br/>Chatter {{event.twitterScore}}</span>
+                    </div>
+                    <div class="note">
+                        <span ng-click="event.showScore = true" ng-hide="event.showScore == true">Show Score</span>
+                        <span ng-if="event.showScore == true">
+                            {{event.finalScore}}
+                        </span>
                     </div>
                     <div class="type">
                         {{event.event_start_date_time | date:'mediumDate'}}
                     </div>
+                </div>
+            </div>
+
+            <div class="blk" ng-click="showMore()">
+                <div class="title" style="background-color: lightblue">
+                    More Games
+                </div>
+            </div>
+            <div class="blk" onclick="moreInfo()">
+                <div class="title" style="background-color: lightgreen">
+                    Info
+                </div>
+                <div class="summary" id="infoPanel" style="display: none">
+                    The rating is calculated automatically based on points difference and lead changes throughout the game.  It is intended to
+                    give an indication of how enjoyable the game will be without giving away the result.
                 </div>
             </div>
 		</div>
@@ -229,7 +237,7 @@
 
         function moreInfo() {
             $("#infoPanel").show();
-            setTimeout(function(){ $("#infoPanel").hide(); }, 15000);
+            setTimeout(function(){ $("#infoPanel").hide(); }, 10000);
         }
 
         (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
