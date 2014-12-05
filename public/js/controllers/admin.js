@@ -1,8 +1,10 @@
 var app = angular.module('teamController', ['ngRoute']);
 app.controller('adminController', ['$scope','$http','Teams', '$location', function($scope, $http, Teams, $location) {
 
+        $scope.securityCode = "";
+
 		$scope.clearAll = function() {
-            Teams.clearAll()
+            Teams.clearAll($scope.securityCode)
                 .success(function(data) {
                     $scope.loading = false;
                     $scope.events = null;
@@ -12,7 +14,7 @@ app.controller('adminController', ['$scope','$http','Teams', '$location', functi
         $scope.initTeams = function() {
             $scope.loading = true;
             console.log('Teams.initTeams');
-            Teams.initTeams()
+            Teams.initTeams($scope.securityCode)
                 .success(function(data) {
                     console.log('Teams.initTeams data res',data);
                 });
@@ -20,7 +22,7 @@ app.controller('adminController', ['$scope','$http','Teams', '$location', functi
         $scope.updateEvent = function(id) {
             $scope.loading = true;
             console.log('updateEvent '+id);
-            Teams.updateEvent(id)
+            Teams.updateEvent(id, $scope.securityCode)
                 .success(function(data) {
                     $scope.loading = false;
                     $scope.events = data; 
@@ -29,7 +31,7 @@ app.controller('adminController', ['$scope','$http','Teams', '$location', functi
 		$scope.boxScoreForCompleted = function() {
             $scope.loading = true;
             console.log('boxScoreForCompleted');
-            Teams.boxScoreForCompleted()
+            Teams.boxScoreForCompleted($scope.securityCode)
                 .success(function(data) {
                     $scope.loading = false;
                     $scope.events = data;
@@ -39,7 +41,7 @@ app.controller('adminController', ['$scope','$http','Teams', '$location', functi
         $scope.processEvent = function(id) {
             $scope.loading = true;
             console.log('processEvent '+id);
-            Teams.processEvent(id)
+            Teams.processEvent(id, $scope.securityCode)
                 .success(function(data) {
                     $scope.loading = false;
                     $scope.events = data; 
@@ -48,7 +50,7 @@ app.controller('adminController', ['$scope','$http','Teams', '$location', functi
 		$scope.initEvents = function(id) {
 			$scope.loading = true;
             console.log('initEvents '+id);
-			Teams.initEvents(id)
+			Teams.initEvents(id, $scope.securityCode)
 				.success(function(data) {
 					$scope.loading = false;
 					$scope.events = data; 
@@ -57,7 +59,7 @@ app.controller('adminController', ['$scope','$http','Teams', '$location', functi
         $scope.initAllEvents = function() {
             $scope.loading = true;
             console.log('initAllEvents ');
-            Teams.initAllEvents()
+            Teams.initAllEvents($scope.securityCode)
                 .success(function(data) {
                     $scope.loading = false;
                 });
@@ -66,7 +68,7 @@ app.controller('adminController', ['$scope','$http','Teams', '$location', functi
         $scope.twitterSearch = function() {
             $scope.loading = true;
             console.log('twitterSearch ');
-            Teams.twitterSearch()
+            Teams.twitterSearch($scope.securityCode)
                 .success(function(data) {
                     $scope.loading = false;
                 });
@@ -75,20 +77,11 @@ app.controller('adminController', ['$scope','$http','Teams', '$location', functi
         $scope.twitterForCompleted = function() {
             $scope.loading = true;
             console.log('twitterForCompleted ');
-            Teams.twitterForCompleted()
+            Teams.twitterForCompleted($scope.securityCode)
                 .success(function(data) {
                     $scope.loading = false;
                 });
         };
 
-
-//        $scope.funcCalled = null;
-//        var initAction = ($location.search()).target;
-//        console.log("initAction", initAction);
-//        if (initAction == 'boxScoreForCompleted') {
-//            console.log("initAction-boxScoreForCompleted");
-//            $scope.boxScoreForCompleted();
-//            $scope.funcCalled = "loading";
-//        }
 
 	}]);

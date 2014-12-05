@@ -17,7 +17,15 @@ if (process.env.TWITTER_CONS_KEY) {
     TWITTER_ACCESS_SECRET = process.env.TWITTER_ACCESS_SECRET;
 }
 else {
-    console.warn("missing config");
+    console.warn("missing TWITTER config");
+    process.exit(1);
+}
+
+if (process.env.SECURITY_CODE) {
+    SECURITY_CODE = process.env.SECURITY_CODE;
+}
+else {
+    console.warn("missing SECURITY_CODE config");
     process.exit(1);
 }
 
@@ -495,7 +503,13 @@ module.exports = function (app) {
 
     // api ---------------------------------------------------------------------
 
-    app.get('/api/twitterSearch', function (req, res) {
+    app.get('/api/twitterSearch/:securityCode', function (req, res) {
+
+        if (SECURITY_CODE !== req.params.securityCode) {
+            console.log("invalid securityCode ", req.params.securityCode);
+            res.send('invalid');
+            return;
+        }
 
         var searchQuery = '#Warriors #OrlandoMagic  since:2014-11-26 until:2014-11-28';
 
@@ -508,7 +522,14 @@ module.exports = function (app) {
     });
 
 
-    app.get('/api/twitterForCompleted', function (req, res) {
+    app.get('/api/twitterForCompleted/:securityCode', function (req, res) {
+
+        if (SECURITY_CODE !== req.params.securityCode) {
+            console.log("invalid securityCode ", req.params.securityCode);
+            res.send('invalid');
+            return;
+        }
+
         console.log('twitterForCompleted');
 
         var now = moment().subtract(10, 'hours');
@@ -548,7 +569,14 @@ module.exports = function (app) {
     });
 
 
-    app.get('/api/clearAll', function (req, res) {
+    app.get('/api/clearAll/:securityCode', function (req, res) {
+
+        if (SECURITY_CODE !== req.params.securityCode) {
+            console.log("invalid securityCode ", req.params.securityCode);
+            res.send('invalid');
+            return;
+        }
+
         Team.remove({}, function (err) {
             console.log('clearAll teams ');
             if (err)
@@ -562,13 +590,27 @@ module.exports = function (app) {
         });
     });
 
-    app.get('/api/initTeams', function (req, res) {
+    app.get('/api/initTeams/:securityCode', function (req, res) {
+
+        if (SECURITY_CODE !== req.params.securityCode) {
+            console.log("invalid securityCode ", req.params.securityCode);
+            res.send('invalid');
+            return;
+        }
+
         fetchTeamData();
         console.log('initTeams app.get2');
         res.send('done')
     });
 
-    app.get('/api/initAllEvents', function (req, res) {
+    app.get('/api/initAllEvents/:securityCode', function (req, res) {
+
+        if (SECURITY_CODE !== req.params.securityCode) {
+            console.log("invalid securityCode ", req.params.securityCode);
+            res.send('invalid');
+            return;
+        }
+
         console.log('initAllEvents');
 
         Team.find(function (err, teams) {
@@ -588,21 +630,46 @@ module.exports = function (app) {
         res.send('done')
     });
 
-    app.get('/api/initEvents/:team_id', function (req, res) {
-        console.log('initEvents for '+req.params.team_id);
+    app.get('/api/initEvents/:team_id/:securityCode', function (req, res) {
+
+        if (SECURITY_CODE !== req.params.securityCode) {
+            console.log("invalid securityCode ", req.params.securityCode);
+            res.send('invalid');
+            return;
+        }
+
+        console.log('initEvents for '+req.params.team_id, req.params.securityCode);
         teamIdQueue.push(req.params.team_id);
         fetchTeamEvents();
         res.send('done')
     });
 
-    app.get('/api/updateEvent/:event_id', function (req, res) {
-        console.log('updateEvent for '+req.params.event_id);
+    app.get('/api/updateEvent/:event_id/:securityCode', function (req, res) {
+        if (SECURITY_CODE !== req.params.securityCode) {
+            console.log("invalid securityCode ", req.params.securityCode);
+            res.send('invalid');
+            return;
+        }
+        console.log('updateEvent for '+req.params.event_id, req.params.securityCode);
         fetchEventDetail(req.params.event_id);
         getEvents(res);
     });
 
-    app.get('/api/boxScoreForCompleted', function (req, res) {
-        console.log('boxScoreForCompleted');
+    app.get('/api/boxScoreForCompleted/:securityCode', function (req, res) {
+
+        if (SECURITY_CODE !== req.params.securityCode) {
+            console.log("invalid securityCode ", req.params.securityCode);
+            res.send('invalid');
+            return;
+        }
+
+        console.log('boxScoreForCompleted', req.params.securityCode);
+
+        if (SECURITY_CODE !== req.params.securityCode) {
+            console.log("invalid securityCode ", req.params.securityCode);
+            res.send('invalid');
+            return;
+        }
 
         var now = moment().subtract(10, 'hours');
         Event.find({},function (err, events) {
@@ -640,8 +707,14 @@ module.exports = function (app) {
         });
     });
 
-    app.get('/api/processEvent/:event_id', function (req, res) {
-        console.log('processEvent for '+req.params.event_id);
+    app.get('/api/processEvent/:event_id/:securityCode', function (req, res) {
+        if (SECURITY_CODE !== req.params.securityCode) {
+            console.log("invalid securityCode ", req.params.securityCode);
+            res.send('invalid');
+            return;
+        }
+
+        console.log('processEvent for '+req.params.event_id, req.params.securityCode);
 
         Event.findOne(
             {event_id: req.params.event_id},

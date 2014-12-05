@@ -15,6 +15,6 @@ It is currently running at http://www.bestgametowatch.com and is hosted on the O
 
 To run this locally you can use a mac terminal command such as:
 
-    NBA_ACCESS_TOKEN=XXX TWITTER_ACCESS_SECRET=XXX TWITTER_ACCESS_TOKEN=XXX TWITTER_CONS_KEY=XXX TWITTER_CONS_SECRET=XXX node server
+    SECURITY_CODE=XXX NBA_ACCESS_TOKEN=XXX TWITTER_ACCESS_SECRET=XXX TWITTER_ACCESS_TOKEN=XXX TWITTER_CONS_KEY=XXX TWITTER_CONS_SECRET=XXX node server
 
 You'll need all the relevant libs of course.
