@@ -478,7 +478,7 @@ function calcScores(event) {
         event.save();
     }
 
-    if (!event.finalScore && event.fullModel) {
+    if (!event.finalScore && event.fullModel && event.fullModel.home_totals && event.fullModel.home_totals.points) {
         if (Math.random() * 10 > 5) { // randomise order of score display
             console.log("a) setting finalScore for ", event.event_id, event.finalScore);
             event.finalScore = event.fullModel.away_totals.points + '/' + event.fullModel.home_totals.points;

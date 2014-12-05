@@ -179,7 +179,7 @@
                         Rating {{event.pointsBasedRating}}
                         <span ng-if="event.twitterScore"><br/>Chatter {{event.twitterScore}}</span>
                     </div>
-                    <div class="note">
+                    <div class="note" ng-if="event.finalScore">
                         <span ng-click="event.showScore = true" ng-hide="event.showScore == true">Show Score</span>
                         <span ng-if="event.showScore == true">
                             {{event.finalScore}}
