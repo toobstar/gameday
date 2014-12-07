@@ -506,7 +506,7 @@ function calcScores(event) {
                   }
                 );
             }
-        }
+        });
         if (event.aussies.length > 0) {
             event.save();
         }
