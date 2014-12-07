@@ -186,6 +186,12 @@
                             {{event.finalScore}}
                         </span>
                     </div>
+										<div class="note" ng-if="event.aussies">
+											<span ng-click="event.aussies = true" ng-hide="event.aussies == true">Show aussies</span>
+											<span ng-if="event.aussies == true">
+												{{event.aussies}}
+											</span>
+										</div>
                     <div class="type">
                         {{event.event_start_date_time | date:'mediumDate'}}
                     </div>

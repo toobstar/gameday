@@ -362,7 +362,7 @@ function getTeams(res) {
     console.log('getTeams');
     Team.find(function (err, teams) {
         console.log('Team.find');
-        
+
         if (err)
             res.send(err); // if there is an error retrieving, send the error. nothing after res.send(err) will execute
 
@@ -374,7 +374,7 @@ function getEvents(res) {
     console.log('getEvents');
     Event.find(function (err, events) {
         console.log('Event.find');
-        
+
         if (err)
             res.send(err);
 
@@ -386,7 +386,7 @@ function getCompletedEvents(res) {
     console.log('getCompletedEvents');
     Event.find(function (err, events) {
         console.log('Event.find');
-        
+
         if (err)
             res.send(err)
 
@@ -485,6 +485,33 @@ function calcScores(event) {
 
         event.save();
     }
+
+    if (!event.aussies && event.fullModel && event.fullModel.away_stats && event.fullModel.home_stats) {
+        event.aussies = [];
+        var ausPlayers = ['EXUM','BAIRSTOW','BOGUT','PATTY','MILLS','INGLES','DELLAVEDOVA','MOTUM'];
+        _.each(event.fullModel.away_stats.concat(event.fullModel.home_stats),function(stat){
+          console.log("checking player: ", stat.display_name);
+            if (_.contains(ausPlayers, stat.last_name.toUpperCase())) {
+              console.log("--found aussie: ", stat.display_name);
+                event.aussies.push(
+                  { 'minutes':stat.minutes,
+                  'points':stat.points,
+                  'assists':stat.assists,
+                  'turnovers':stat.turnovers,
+                  'steals':stat.steals,
+                  'blocks':stat.blocks,
+                  'field_goal_percentage':stat.field_goal_percentage,
+                  'three_point_percentage':stat.three_point_percentage,
+                  'free_throw_percentage':stat.free_throw_percentage
+                  }
+                );
+            }
+        });
+        if (event.aussies.length > 0) {
+            event.save();
+        }
+    }
+
 
     if (!event.finalScore && event.fullModel && event.fullModel.home_totals && event.fullModel.home_totals.points) {
         if (Math.random() * 10 > 5) { // randomise order of score display
@@ -615,7 +642,7 @@ module.exports = function (app) {
 
         Team.find(function (err, teams) {
             console.log('Team.find');
-            
+
             if (err)
                 res.send(err)
 
@@ -674,7 +701,7 @@ module.exports = function (app) {
         var now = moment().subtract(10, 'hours');
         Event.find({},function (err, events) {
 
-            
+
             if (err) {
                 console.log("error", err);
                 res.send(err)
