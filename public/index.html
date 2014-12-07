@@ -186,12 +186,22 @@
                             {{event.finalScore}}
                         </span>
                     </div>
-										<div class="note" ng-if="event.aussies">
-											<span ng-click="event.aussies = true" ng-hide="event.aussies == true">Show aussies</span>
-											<span ng-if="event.aussies == true">
-												{{event.aussies}}
-											</span>
-										</div>
+                    <div class="note" ng-if="event.aussies">
+                        <span ng-click="event.showOzDetail = true" ng-hide="event.showOzDetail == true">Show aussies</span>
+                        <span ng-if="event.showOzDetail == true">
+                            <div ng-repeat="player in event.aussies">
+                                {{player.name}}: {{player.points}} points / {{player.assists}} assists
+                                <span ng-if="player.assists > 0">/ {{player.assists}} assists</span>
+                                <span ng-if="player.turnovers > 0">/ {{player.turnovers}} turnovers</span>
+                                <span ng-if="player.steals > 0">/ {{player.steals}} steals</span>
+                                <span ng-if="player.blocks > 0">/ {{player.blocks}} blocks</span>
+                                in {{player.minutes}}mins.
+                                Shooting at {{player.field_goal_percentage*100 | number : 0}}%
+                                ({{player.three_point_percentage*100 | number : 0}}% from the 3).
+                            </div>
+
+                        </span>
+                    </div>
                     <div class="type">
                         {{event.event_start_date_time | date:'mediumDate'}}
                     </div>

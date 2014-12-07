@@ -11,6 +11,7 @@ module.exports = mongoose.model('Event', {
 
     fullModel : {type : Object, default: null},
 
+    aussies : {type : Object, default: null},
     finalScore : {type : String, default: ''},
 
     pointsTotalDiff : {type : String, default: ''},

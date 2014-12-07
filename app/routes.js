@@ -494,15 +494,17 @@ function calcScores(event) {
             if (_.contains(ausPlayers, stat.last_name.toUpperCase())) {
               console.log("--found aussie: ", stat.display_name);
                 event.aussies.push(
-                  { 'minutes':stat.minutes,
-                  'points':stat.points,
-                  'assists':stat.assists,
-                  'turnovers':stat.turnovers,
-                  'steals':stat.steals,
-                  'blocks':stat.blocks,
-                  'field_goal_percentage':stat.field_goal_percentage,
-                  'three_point_percentage':stat.three_point_percentage,
-                  'free_throw_percentage':stat.free_throw_percentage
+                  {
+                      'name':stat.display_name,
+                      'minutes':stat.minutes,
+                      'points':stat.points,
+                      'assists':stat.assists,
+                      'turnovers':stat.turnovers,
+                      'steals':stat.steals,
+                      'blocks':stat.blocks,
+                      'field_goal_percentage':stat.field_goal_percentage,
+                      'three_point_percentage':stat.three_point_percentage,
+                      'free_throw_percentage':stat.free_throw_percentage
                   }
                 );
             }
