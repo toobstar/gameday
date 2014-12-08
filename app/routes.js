@@ -394,8 +394,7 @@ function getCompletedEvents(res) {
         var completedEvents = [];
 
         _.each(events,function(event) {
-            var eventDate = moment(event.event_start_date_time);   // need to confirm timezone situation..
-            if (eventDate.isBefore(now)) {
+            if (event.pointsBasedRating) {
                 event.fullModel = null;// clear full model to make object lighter weight for UI
                 completedEvents.push(event);
             }
