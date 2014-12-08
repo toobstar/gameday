@@ -38,12 +38,21 @@ app.directive('masonryWallDir', function(){
 
                 var self = this;
                 this.debouncedReload = _.debounce(function(){
-                    console.log('I am only ran once after all the destroys are done!');
-                    console.log('item is being destroyed');
+                    console.log('debouncedReload');
                     self.masonry.reloadItems();
                     self.masonry.layout();
                 }, 100);
 
+
+                $scope.$on('tilesUpdated', function(event, args) {
+                    console.log('tilesUpdated',event,args);
+                    setTimeout(function(){
+                        console.log('tilesUpdated delayed reload');
+                        self.debouncedReload();
+                    }, 100);
+
+
+                });
             }
         ]
     };
@@ -69,7 +78,6 @@ app.directive('masonryItemDir',
                 });
 
                 scope.$on('$destroy', masonryWallDirCtrl.debouncedReload);
-
             }
         };
     }
@@ -82,6 +90,7 @@ app.controller('mainController', ['$scope','$http','Teams', function($scope, $ht
         $scope.currentTeam = null;
         $scope.currentRating = null;
         $scope.currentChatter = 1000;
+        $scope.onlyWithOz = false;
         $scope.currentRating = '';
         $scope.ratings = ["A","B","C"];
 
@@ -104,15 +113,7 @@ app.controller('mainController', ['$scope','$http','Teams', function($scope, $ht
             .success(function(data) {
                 $scope.completedEvents = data;
                 $scope.loading = false;
-
-                var $container = $('.eveContainer');
-                $container.masonry({
-                    containerStyle:{
-                        position: 'relative',
-                        width: '100%'
-                    }
-                });
-                $container.masonry();
+                $scope.$emit('tilesUpdated');
             });
 
 
@@ -120,15 +121,15 @@ app.controller('mainController', ['$scope','$http','Teams', function($scope, $ht
 
         $scope.showMore = function() {
             $scope.eventCount = $scope.eventCount + 3;
-            var $container = $('.eveContainer');
-            $container.masonry();
+            $scope.$emit('tilesUpdated');
         }
 
         $scope.matchTeam = function(event){
             var res1 = $scope.matchTeamById(event);
             var res2 = $scope.matchTeamByRating(event);
             var res3 = $scope.matchTeamByChatter(event);
-            return res1 && res2 && res3;
+            var res4 = $scope.matchTeamWithAussies(event);
+            return res1 && res2 && res3 && res4;
         }
         $scope.matchTeamById = function(event){
             if (!$scope.currentTeam || !$scope.currentTeam.team_id)
@@ -162,11 +163,25 @@ app.controller('mainController', ['$scope','$http','Teams', function($scope, $ht
 
             return false;
         }
+
+        $scope.matchTeamWithAussies = function(event){
+            return $scope.onlyWithOz == false || (event.aussies && event.aussies.length > 0);
+        }
+
+        $scope.showOzDetail = function(event) {
+            event.showOzDetail = true;
+            console.log('showOzDetail');
+            $scope.$emit('tilesUpdated');
+        }
+        $scope.toggleShowGamesWithAussies = function() {
+            $scope.onlyWithOz = !$scope.onlyWithOz;
+            console.log('$scope.onlyWithOz',$scope.onlyWithOz);
+        }
 }]);
 
 window.onresize = _.debounce(function(){
         console.log('resize');
-        var $container = $('.eveContainer');
-        $container.masonry();
+//        var $container = $('.eveContainer');
+//        $container.masonry();
     }
 , 100);

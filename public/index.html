@@ -155,6 +155,9 @@
                     <option value=""> Rating </option>
                     <option ng-repeat="rating in ratings" value="{{rating}}">{{rating}}</option>
                 </select>
+                <span ng-click="toggleShowGamesWithAussies()">
+                    <img src="img/aus.png" alt="Show Aussie player details"/>
+                </span>
                 <!--<select ng-model="currentChatter" style="margin-left:9px" >-->
                     <!--<option value="1000"> Chatter </option>-->
                     <!--<option value="1"> Lots </option>-->
@@ -187,19 +190,20 @@
                         </span>
                     </div>
                     <div class="note" ng-if="event.aussies">
-                        <span ng-click="event.showOzDetail = true" ng-hide="event.showOzDetail == true">Show aussies</span>
-                        <span ng-if="event.showOzDetail == true">
+                        <span ng-click="showOzDetail(event)" ng-hide="event.showOzDetail == true">
+                            <img src="img/aus.png" alt="Show Aussie player details"/>
+                        </span>
+                        <span ng-if="event.showOzDetail == true" style="padding:0 10px 0 10px;">
                             <div ng-repeat="player in event.aussies">
-                                {{player.name}}: {{player.points}} points / {{player.assists}} assists
+                                {{player.name}}: {{player.points}} points
                                 <span ng-if="player.assists > 0">/ {{player.assists}} assists</span>
                                 <span ng-if="player.turnovers > 0">/ {{player.turnovers}} turnovers</span>
                                 <span ng-if="player.steals > 0">/ {{player.steals}} steals</span>
                                 <span ng-if="player.blocks > 0">/ {{player.blocks}} blocks</span>
                                 in {{player.minutes}}mins.
                                 Shooting at {{player.field_goal_percentage*100 | number : 0}}%
-                                ({{player.three_point_percentage*100 | number : 0}}% from the 3).
+                                <span ng-if="player.three_point_percentage > 0">({{player.three_point_percentage*100 | number : 0}}% from 3)</span>.
                             </div>
-
                         </span>
                     </div>
                     <div class="type">
