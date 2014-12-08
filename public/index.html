@@ -110,7 +110,7 @@
 
         .eve .type,.blk .type{
             font-size: 10px;
-            padding: 0 10px 10px;
+            padding: 10px 10px 10px;
         }
         .eve .summary,.blk .summary{padding: 15px 10px;font-size:1.2em;}
         .eve .summary p,.blk .summary p {
@@ -156,7 +156,7 @@
                     <option ng-repeat="rating in ratings" value="{{rating}}">{{rating}}</option>
                 </select>
                 <span ng-click="toggleShowGamesWithAussies()">
-                    <img src="img/aus.png" alt="Show Aussie player details"/>
+                    <img src="img/aus.png" title="Show games with Australians" alt="Show games with Australians"/>
                 </span>
                 <!--<select ng-model="currentChatter" style="margin-left:9px" >-->
                     <!--<option value="1000"> Chatter </option>-->
@@ -183,18 +183,19 @@
                         Rating {{event.pointsBasedRating}}
                         <span ng-if="event.twitterScore"><br/>Chatter {{event.twitterScore}}</span>
                     </div>
-                    <div class="note" ng-if="event.finalScore">
-                        <span ng-click="event.showScore = true" ng-hide="event.showScore == true">Show Score</span>
+                    <div class="note" ng-if="event.finalScore" style="float: right">
+                        <span ng-click="event.showScore = true" ng-hide="event.showScore == true">Game Score</span>
                         <span ng-if="event.showScore == true">
                             {{event.finalScore}}
                         </span>
                     </div>
                     <div class="note" ng-if="event.aussies">
                         <span ng-click="showOzDetail(event)" ng-hide="event.showOzDetail == true">
-                            <img src="img/aus.png" alt="Show Aussie player details"/>
+                            <img src="img/aus.png" title="Show Aussie player details" alt="Show Aussie player details"/>
                         </span>
                         <span ng-if="event.showOzDetail == true" style="padding:0 10px 0 10px;">
                             <div ng-repeat="player in event.aussies">
+                                <br/>
                                 {{player.name}}: {{player.points}} points
                                 <span ng-if="player.assists > 0">/ {{player.assists}} assists</span>
                                 <span ng-if="player.turnovers > 0">/ {{player.turnovers}} turnovers</span>
@@ -203,6 +204,7 @@
                                 in {{player.minutes}}mins.
                                 Shooting at {{player.field_goal_percentage*100 | number : 0}}%
                                 <span ng-if="player.three_point_percentage > 0">({{player.three_point_percentage*100 | number : 0}}% from 3)</span>.
+                                <br/>
                             </div>
                         </span>
                     </div>
