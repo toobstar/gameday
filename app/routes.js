@@ -481,18 +481,16 @@ function calcScores(event) {
             event.pointsBasedRating = 'B';
         else
             event.pointsBasedRating = 'C';
-
-
-        event.save();
     }
 
-    if (!event.aussies && event.fullModel && event.fullModel.away_stats && event.fullModel.home_stats) {
+//    if (!event.aussies && event.fullModel && event.fullModel.away_stats && event.fullModel.home_stats) {
+    if (event.fullModel && event.fullModel.away_stats && event.fullModel.home_stats) {
         event.aussies = [];
-        var ausPlayers = ['EXUM','BAIRSTOW','BOGUT','PATTY','MILLS','INGLES','DELLAVEDOVA','MOTUM'];
+        var ausPlayers = ['EXUM','BAIRSTOW','BOGUT','PATTY','MILLS','INGLES','DELLAVEDOVA','MOTUM','BAYNES'];
         _.each(event.fullModel.away_stats.concat(event.fullModel.home_stats),function(stat){
           console.log("checking player: ", stat.display_name);
             if (_.contains(ausPlayers, stat.last_name.toUpperCase())) {
-              console.log("--found aussie: ", stat.display_name);
+                console.log("--found aussie: ", stat.display_name, stat);
                 event.aussies.push(
                   {
                       'name':stat.display_name,
@@ -510,10 +508,10 @@ function calcScores(event) {
             }
         });
         if (event.aussies.length > 0) {
-            event.save();
+            event.markModified('aussies');
+            console.log("saving event with aussie: ", event);
         }
     }
-
 
     if (!event.finalScore && event.fullModel && event.fullModel.home_totals && event.fullModel.home_totals.points) {
         if (Math.random() * 10 > 5) { // randomise order of score display
@@ -524,8 +522,14 @@ function calcScores(event) {
             console.log("b) setting finalScore for ", event.event_id, event.finalScore);
             event.finalScore = event.fullModel.home_totals.points + '/' + event.fullModel.away_totals.points;
         }
-        event.save();
     }
+
+    event.save(function (err, event, numberAffected) {
+        if (err) {
+            console.log('error saving ',err);
+        }
+    })
+
 }
 
 module.exports = function (app) {
