@@ -175,10 +175,23 @@ app.controller('mainController', ['$scope','$http','Teams','$window', function($
             console.log('showOzDetail');
             $scope.$emit('tilesUpdated');
         }
+
         $scope.toggleShowGamesWithAussies = function() {
             $scope.onlyWithOz = !$scope.onlyWithOz;
             console.log('$scope.onlyWithOz',$scope.onlyWithOz);
         }
+
+        $scope.$watch(function() { return $scope.currentRating }, function(value) {
+            if(!value) return;
+            console.log('currentRating changed');
+            $scope.$emit('tilesUpdated');
+        });
+
+        $scope.$watch(function() { return $scope.currentTeam }, function(value) {
+            if(!value) return;
+            console.log('currentTeam changed');
+            $scope.$emit('tilesUpdated');
+        });
 
         var w = angular.element($window);
         w.bind('resize', function () {
