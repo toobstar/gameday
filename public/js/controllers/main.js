@@ -64,15 +64,13 @@ app.directive('masonryItemDir',
             scope: true,
             require: '^masonryWallDir',
             link: function(scope, element, attributes, masonryWallDirCtrl){
-
-                console.log('item is repeated');
-
+                //console.log('item is repeated');
                 imagesLoaded(element, function(){
                     if(scope.$first){
-                        console.log('I get prepended');
+                        //console.log('I get prepended');
                         masonryWallDirCtrl.masonry.prepended(element);
                     }else{
-                        console.log('I get appended');
+                        //console.log('I get appended');
                         masonryWallDirCtrl.masonry.appended(element);
                     }
                 });
@@ -118,6 +116,10 @@ app.controller('mainController', ['$scope','$http','Teams','$window', function($
 
 
         // local functions
+
+        $scope.setCurrentTeam = function(teamId) {
+            $scope.currentTeam = $scope.teamsById[teamId];
+        }
 
         $scope.showMore = function() {
             $scope.eventCount = $scope.eventCount + 3;

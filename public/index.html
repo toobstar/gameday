@@ -173,10 +173,10 @@
                     >
                 <div class="eve" ng-repeat="event in completedEvents | filter:matchTeam | orderBy:'event_start_date_time':true | limitTo:eventCount" custom-directive masonry-item-dir>
                     <div class="title">
-                        {{teamsById[event.away_team_id].full_name}}
+                        <span ng-click="setCurrentTeam(event.away_team_id)">{{teamsById[event.away_team_id].full_name}}</span>
                         <img ng-src="img/logos/{{teamsById[event.away_team_id].abbreviation}}.gif" alt="" style="max-height: 40px"/>
                         &#64; <br/>
-                        {{teamsById[event.home_team_id].full_name}}
+                        <span ng-click="setCurrentTeam(event.home_team_id)">{{teamsById[event.home_team_id].full_name}}</span>
                         <img ng-src="img/logos/{{teamsById[event.home_team_id].abbreviation}}.gif" alt="" style="max-height: 40px"/>
                     </div>
                     <div class="summary" title="Exact Rating: {{event.pointsBasedScore}}">
