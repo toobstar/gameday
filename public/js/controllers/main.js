@@ -45,11 +45,11 @@ app.directive('masonryWallDir', function(){
 
 
                 $scope.$on('tilesUpdated', function(event, args) {
-                    console.log('tilesUpdated',event,args);
+                    console.log('tilesUpdated');
                     setTimeout(function(){
                         console.log('tilesUpdated delayed reload');
                         self.debouncedReload();
-                    }, 100);
+                    }, 300);
 
 
                 });
@@ -83,7 +83,7 @@ app.directive('masonryItemDir',
     }
 );
 
-app.controller('mainController', ['$scope','$http','Teams', function($scope, $http, Teams) {
+app.controller('mainController', ['$scope','$http','Teams','$window', function($scope, $http, Teams, $window) {
 
 		$scope.loading = true;
 		$scope.eventCount = 10;
@@ -177,11 +177,12 @@ app.controller('mainController', ['$scope','$http','Teams', function($scope, $ht
             $scope.onlyWithOz = !$scope.onlyWithOz;
             console.log('$scope.onlyWithOz',$scope.onlyWithOz);
         }
+
+        var w = angular.element($window);
+        w.bind('resize', function () {
+            console.log('resize');
+            $scope.$emit('tilesUpdated');
+        });
+
 }]);
 
-window.onresize = _.debounce(function(){
-        console.log('resize');
-//        var $container = $('.eveContainer');
-//        $container.masonry();
-    }
-, 100);
