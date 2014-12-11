@@ -85,11 +85,12 @@ app.controller('mainController', ['$scope','$http','Teams','$window', function($
 
 		$scope.loading = true;
 		$scope.eventCount = 10;
-		$scope.upcomingCount = 3;
+		$scope.upcomingCount = 6;
         $scope.currentTeam = null;
         $scope.currentRating = null;
         $scope.currentChatter = 1000;
         $scope.onlyWithOz = false;
+        $scope.showUpcoming = false;
         $scope.currentRating = '';
         $scope.ratings = ["A","B","C"];
 
@@ -299,8 +300,14 @@ app.controller('mainController', ['$scope','$http','Teams','$window', function($
 
         $scope.toggleShowGamesWithAussies = function() {
             $scope.onlyWithOz = !$scope.onlyWithOz;
-            console.log('$scope.onlyWithOz',$scope.onlyWithOz);
+            console.log('scope.onlyWithOz',$scope.onlyWithOz);
         }
+
+        $scope.toggleShowUpcoming = function() {
+            $scope.showUpcoming = !$scope.showUpcoming;
+            console.log('scope.showUpcoming',$scope.showUpcoming);
+        }
+
 
         $scope.$watch(function() { return $scope.currentRating }, function(value) {
             if(!value) return;
