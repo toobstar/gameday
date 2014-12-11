@@ -181,12 +181,25 @@
                     <option value=""> Rating </option>
                     <option ng-repeat="rating in ratings" value="{{rating}}">{{rating}}</option>
                 </select>
-                <span ng-click="toggleShowGamesWithAussies()" class="textButton">
+                <span ng-click="toggleShowGamesWithAussies()" class="textButton" ng-show="onlyWithOz == false">
                     <img src="img/aus.png" title="Show games with Australians" alt="Show games with Australians"/>
-                    Games with Australians
+                    With Australians
+                </span>
+                <span ng-click="toggleShowGamesWithAussies()" class="textButton" ng-show="onlyWithOz == true">
+                    <img src="img/aus.png" title="Show games with Australians" alt="Show games with Australians"/>
+                    All
                 </span>
                 <span ng-click="toggleShowUpcoming()" class="textButton">
-                    Upcoming Games
+                    Show upcoming
+                </span>
+                <span ng-click="showBest()" class="textButton" ng-show="showingBest == false">
+                    Best by day
+                </span>
+                <span ng-click="showBestEver()" class="textButton" ng-show="showingBest == false">
+                    Best so far
+                </span>
+                <span ng-click="showAll()" class="textButton" ng-show="showingBest == true">
+                    All Games
                 </span>
                 <!--<select ng-model="currentChatter" style="margin-left:9px" >-->
                     <!--<option value="1000"> Chatter </option>-->
@@ -223,7 +236,7 @@
                             transitionDuration: '0.4s'
                         }"
                     >
-                <div class="eve" ng-repeat="event in completedEvents | filter:matchTeam | orderBy:'event_start_date_time':true | limitTo:eventCount" custom-directive masonry-item-dir>
+                <div class="eve" ng-repeat="event in events | filter:matchTeam | orderBy:'event_start_date_time':true | limitTo:eventCount" custom-directive masonry-item-dir>
                     <div class="title">
                         <span ng-click="setCurrentTeam(event.home_team_id)">{{teamsById[event.home_team_id].full_name}}</span>
                         <img ng-src="img/logos/{{teamsById[event.home_team_id].abbreviation}}.gif" alt="" style="max-height: 40px"/>

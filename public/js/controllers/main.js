@@ -93,7 +93,11 @@ app.controller('mainController', ['$scope','$http','Teams','$window', function($
         $scope.showUpcoming = false;
         $scope.currentRating = '';
         $scope.ratings = ["A","B","C"];
-
+        $scope.bestGameEver = [];
+        $scope.bestGamesByDate = [];
+        $scope.completedEvents = [];
+        $scope.showingBest = false;
+        $scope.events = [];
 
 		// REST API ====
 		// when landing on the page get all teams
@@ -113,9 +117,40 @@ app.controller('mainController', ['$scope','$http','Teams','$window', function($
         Teams.completedEvents()
             .success(function(data) {
                 $scope.completedEvents = data;
+                $scope.showAll();
                 $scope.loading = false;
                 $scope.$emit('tilesUpdated');
                 $scope.fetchOpinions();
+
+                var bestScoreByDate = {};
+                var bestGameByDate = {};
+                var bestGameEver = null;
+                var bestScoreEver = 0;
+                $.each($scope.completedEvents,function(i,e){
+                    var eventDate = moment(e.event_start_date_time);
+                    var dateStr = eventDate.format('YY-MM-DD');
+                    if (!bestScoreByDate[dateStr]) {
+                        bestScoreByDate[dateStr] = 0;
+                    }
+
+                    var eventIntScore = parseInt(e.pointsBasedScore);
+                    if (bestScoreByDate[dateStr] < eventIntScore) {
+                        bestScoreByDate[dateStr] = eventIntScore;
+                        bestGameByDate[dateStr] = e;
+                    }
+
+                    if (eventIntScore > bestScoreEver) {
+                        bestScoreEver = eventIntScore;
+                        bestGameEver = e;
+                    }
+                });
+
+                $.each(bestGameByDate,function(date,event){
+                    $scope.bestGamesByDate.push(event);
+                });
+
+                $scope.bestGameEver.push(bestGameEver);
+
             });
 
         Teams.upcomingEvents()
@@ -306,6 +341,24 @@ app.controller('mainController', ['$scope','$http','Teams','$window', function($
         $scope.toggleShowUpcoming = function() {
             $scope.showUpcoming = !$scope.showUpcoming;
             console.log('scope.showUpcoming',$scope.showUpcoming);
+        }
+
+        $scope.showAll = function() {
+            console.log('scope.showAll');
+            $scope.events = $scope.completedEvents;
+            $scope.showingBest = false;
+        }
+
+        $scope.showBest = function() {
+            console.log('scope.showBest');
+            $scope.events = $scope.bestGamesByDate;
+            $scope.showingBest = true;
+        }
+
+        $scope.showBestEver = function() {
+            console.log('scope.showBest');
+            $scope.events = $scope.bestGameEver;
+            $scope.showingBest = true;
         }
 
 
