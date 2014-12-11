@@ -84,7 +84,7 @@ app.directive('masonryItemDir',
 app.controller('mainController', ['$scope','$http','Teams','$window', function($scope, $http, Teams, $window) {
 
 		$scope.loading = true;
-		$scope.eventCount = 10;
+		$scope.eventCount = 6;
 		$scope.upcomingCount = 6;
         $scope.currentTeam = null;
         $scope.currentRating = null;
@@ -227,6 +227,7 @@ app.controller('mainController', ['$scope','$http','Teams','$window', function($
                         console.log("opinions for event",opinionArray);
                         var likeCount = 0;
                         var dislikeCount = 0;
+                        var userVoted = false;
                         $.each(opinionArray,function(i,o){
                             if (o.state === 'like') {
                                 likeCount++;
@@ -234,12 +235,16 @@ app.controller('mainController', ['$scope','$http','Teams','$window', function($
                             else if (o.state === 'dislike') {
                                 dislikeCount++;
                             }
+                            if (o.userVoted == "true") {
+                                userVoted = true;
+                            }
                         });
 
                         $.each($scope.completedEvents,function(i,e){
                             if (e.event_id == eventId) {
                                 e.likeCount = likeCount;
                                 e.dislikeCount = dislikeCount;
+                                e.userVoted = userVoted;
                                 return;
                             }
                         });
@@ -255,11 +260,13 @@ app.controller('mainController', ['$scope','$http','Teams','$window', function($
         $scope.likeEvent = function(event) {
             $scope.flagEvent(event, 'like');
             event.likeCount = event.likeCount+1;
+            event.userVoted = true;
         }
 
         $scope.dislikeEvent = function(event) {
             $scope.flagEvent(event, 'dislike');
             event.dislikeCount = event.dislikeCount+1;
+            event.userVoted = true;
         }
 
         $scope.flagEvent = function(event, status) {

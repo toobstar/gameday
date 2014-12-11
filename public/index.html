@@ -105,12 +105,13 @@
         .textButton {
             width: 100%;
             padding: 5px 15px 10px;
-            margin: 10px;
+            margin-top: 50px;
             font-size: 18px;
             color: #334;
             text-shadow: 1px 1px 0 #fff;
             background: rgba(240, 240,240,.6);
             border-radius: 2px 2px 0 0;
+            white-space:nowrap;
         }
 
         .eve .title,.blk .title{
@@ -127,7 +128,10 @@
             font-size: 10px;
             padding: 10px 10px 10px;
         }
-        .eve .summary,.blk .summary{padding: 15px 10px;font-size:1.2em;}
+        .eve .summary,.blk .summary {
+            padding: 15px 10px;
+            font-size:1.4em;
+        }
         .eve .summary p,.blk .summary p {
             margin: 1em 0;
             line-height: 120%;
@@ -135,8 +139,10 @@
 
         .eve .note,.blk .note{padding: 10px 10px;font-size:0.8em;}
 
-        svg {
-            fill: red;
+        .userVoted {
+            border-bottom-width:2px;
+            border-bottom-style:solid;
+            border-bottom-color:darkslategrey;
         }
 
 
@@ -168,42 +174,25 @@
 		</div>
 
 		<div class="row">
-            <div>
-                <select ng-model="currentTeam" ng-options="team.full_name for team in teams" style="margin-left:9px;margin-top:22px">
+            <div style="margin-bottom: 20px">
+                <select ng-model="currentTeam" ng-options="team.full_name for team in teams" style="margin:22px 9px 20px;">
                     <option value=""> Team </option>
                 </select>
-                <select ng-model="currentRating" style="margin-left:9px;margin-top:22px" >
+                <select ng-model="currentRating" style="margin:22px 9px 20px;" >
                     <option value=""> Rating </option>
                     <option ng-repeat="rating in ratings" value="{{rating}}">{{rating}}</option>
                 </select>
-                <span ng-click="toggleShowGamesWithAussies()" class="textButton" ng-show="onlyWithOz == false">
-                    <img src="img/aus.png" title="Show games with Australians" alt="Show games with Australians"/>
-                    With Australians
-                </span>
-                <span ng-click="toggleShowGamesWithAussies()" class="textButton" ng-show="onlyWithOz == true">
-                    <img src="img/aus.png" title="Show games with Australians" alt="Show games with Australians"/>
-                    All
-                </span>
-                <span ng-click="toggleShowUpcoming()" class="textButton" ng-show="showUpcoming == false">
-                    Show upcoming
-                </span>
-                <span ng-click="toggleShowUpcoming()" class="textButton" ng-show="showUpcoming == true">
-                    Hide upcoming
-                </span>
-                <span ng-click="showBest()" class="textButton" ng-show="showingBest == false">
-                    Best by day
-                </span>
-                <span ng-click="showBestEver()" class="textButton" ng-show="showingBest == false">
-                    Best so far
-                </span>
-                <span ng-click="showAll()" class="textButton" ng-show="showingBest == true">
-                    All Games
-                </span>
+                <span ng-click="toggleShowGamesWithAussies()" class="textButton" ng-show="onlyWithOz == false"><img src="img/aus.png" title="Show games with Australians" alt="Show games with Australians"/> With Australians</span>
+                <span ng-click="toggleShowGamesWithAussies()" class="textButton" ng-show="onlyWithOz == true"><img src="img/aus.png" title="Show games with Australians" alt="Show games with Australians"/> All</span>
+                <span ng-click="toggleShowUpcoming()" class="textButton" ng-show="showUpcoming == false">Show upcoming</span>
+                <span ng-click="toggleShowUpcoming()" class="textButton" ng-show="showUpcoming == true">Hide upcoming</span>
+                <span ng-click="showBest()" class="textButton" ng-show="showingBest == false">Best by day</span>
+                <span ng-click="showBestEver()" class="textButton" ng-show="showingBest == false">Best so far</span>
+                <span ng-click="showAll()" class="textButton" ng-show="showingBest == true">All Games</span>
                 <!--<select ng-model="currentChatter" style="margin-left:9px" >-->
                     <!--<option value="1000"> Chatter </option>-->
                     <!--<option value="1"> Lots </option>-->
                 <!--</select>-->
-
             </div>
 
             <div class="eveContainer" ng-show="showUpcoming == true">
@@ -252,16 +241,20 @@
                             {{event.finalScore}}
                         </span>
                     </div>
-                    <div class="note">
-                        <span ng-click="likeEvent(event)">
-                            <img src="img/up.png" alt="like" title="like" style="width: 20px"/>
-                            <span ng-show="event.dislikeCount > 0 || event.likeCount > 0">{{event.likeCount}}</span>
-                        </span>
-                        <span ng-click="dislikeEvent(event)">
-                            <img src="img/down.png" alt="Dislike" title="Dislike" style="width: 20px"/>
-                            <span ng-show="event.dislikeCount > 0 || event.likeCount > 0">{{event.dislikeCount}}</span>
-                        </span><br/>
-
+                    <div class="note" >
+                        <div ng-class="{userVoted:event.userVoted == true}" style="width:65px;padding-bottom:5px;">
+                            <span ng-click="likeEvent(event)" >
+                                <img src="img/up.png" alt="like" title="like" style="width: 20px"/>
+                                <span ng-show="event.dislikeCount > 0 || event.likeCount > 0">{{event.likeCount}}</span>
+                            </span>
+                            <span ng-click="dislikeEvent(event)">
+                                <img src="img/down.png" alt="Dislike" title="Dislike" style="width: 20px"/>
+                                <span ng-show="event.dislikeCount > 0 || event.likeCount > 0">{{event.dislikeCount}}</span>
+                            </span>
+                        </div>
+                    </div>
+                    <div class="type" style="float: right">
+                        {{event.event_start_date_time | date:'mediumDate'}}
                     </div>
                     <div class="note" ng-if="event.aussies">
                         <span ng-click="showOzDetail(event)" ng-hide="event.showOzDetail == true">
@@ -282,15 +275,13 @@
                             </div>
                         </span>
                     </div>
-                    <div class="type">
-                        {{event.event_start_date_time | date:'mediumDate'}}
-                    </div>
+
                 </div>
             </div>
 
             <div class="blk" ng-click="showMore()">
                 <div class="title" style="background-color: lightblue">
-                    More Completed
+                    More
                 </div>
             </div>
             <div class="blk" onclick="moreInfo()">

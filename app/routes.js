@@ -360,7 +360,7 @@ function buildURL(host, sport, method, id, format, params) {
 
 
 
-function getOpinions(res) {
+function getOpinions(req, res) {
     console.log('getOpinions');
     Opinion.find(function (err, opinions) {
         console.log('Opinion.find');
@@ -368,6 +368,16 @@ function getOpinions(res) {
         if (err)
             res.send(err); // if there is an error retrieving, send the error. nothing after res.send(err) will execute
 
+        _.each(opinions,function(op) {
+            console.log("comparing",op.ip, req.ip);
+            if (op.ip == req.ip) {
+                op.userVoted = "true";
+                console.log("match",op.userVoted);
+                console.log("match",op);
+            }
+        });
+
+        console.log("opinions",opinions);
         res.json(opinions);
     });
 };
@@ -796,7 +806,7 @@ module.exports = function (app) {
 
     app.get('/api/opinions', function (req, res) {
         console.log('/api/opinions');
-        getOpinions(res);
+        getOpinions(req, res);
     });
 
     app.get('/api/teams', function (req, res) {
