@@ -85,12 +85,14 @@ app.controller('mainController', ['$scope','$http','Teams','$window', function($
 
 		$scope.loading = true;
 		$scope.eventCount = 10;
+		$scope.upcomingCount = 5;
         $scope.currentTeam = null;
         $scope.currentRating = null;
         $scope.currentChatter = 1000;
         $scope.onlyWithOz = false;
         $scope.currentRating = '';
         $scope.ratings = ["A","B","C"];
+
 
 		// REST API ====
 		// when landing on the page get all teams
@@ -112,10 +114,125 @@ app.controller('mainController', ['$scope','$http','Teams','$window', function($
                 $scope.completedEvents = data;
                 $scope.loading = false;
                 $scope.$emit('tilesUpdated');
+                $scope.fetchOpinions();
             });
+
+        Teams.upcomingEvents()
+            .success(function(data) {
+                $scope.upcomingEvents = data;
+                $scope.loading = false;
+
+                $.each($scope.upcomingEvents,function(i,e){
+                    var eventDateETzone = moment(e.event_start_date_time).zone("-04:00");
+                    var nowETzone = moment().zone("-04:00");
+
+                    var type = 'day';
+                    var diff = eventDateETzone.diff(nowETzone, 'days', true);
+                    if (Math.abs(diff) < 1) {
+                        diff = eventDateETzone.diff(nowETzone, 'hours', true);
+                        type = 'hour';
+                        if (Math.abs(diff) < 2) {
+                            type = 'minute';
+                            diff = eventDateETzone.diff(nowETzone, 'minutes');
+                        }
+                    }
+
+                    if (diff < 0) {
+                        var startedYet = 'Started ';
+                        var startedYetSuffix = ' ago';
+                    }
+                    else {
+                        var startedYet = 'Starts in ';
+                        var startedYetSuffix = '';
+                    }
+
+                    diff = Math.abs(diff);
+                    diff = Math.floor(diff);
+                    e.startingIn = startedYet + diff + ' ' + type + $scope.isPlural(diff) + startedYetSuffix;
+
+                });
+
+            });
+
+        $scope.isPlural = function(number) {
+            if (number > 1) {
+                return 's';
+            }
+            else {
+                return '';
+            }
+        }
+
+        $scope.fetchOpinions = function() {
+
+            Teams.getOpinions()
+                .success(function(data) {
+                    $scope.opinions = data;
+                    console.log("opinions",$scope.opinions);
+
+                    var opinionsByEventId = {};
+
+                    // group by event
+                    $.each($scope.opinions,function(i,o){
+                        console.log("opinion",o);
+                        if (!opinionsByEventId[o.event_id]) {
+                            opinionsByEventId[o.event_id] = [];
+                        }
+                        opinionsByEventId[o.event_id].push(o);
+                    });
+
+                    $.each($scope.completedEvents,function(i,e){
+                        e.likeCount = 0;
+                        e.dislikeCount = 0;
+                    });
+
+                    // aggregate score & set on local event model
+                    $.each(opinionsByEventId,function(eventId,opinionArray){
+                        console.log("opinions for event",opinionArray);
+                        var likeCount = 0;
+                        var dislikeCount = 0;
+                        $.each(opinionArray,function(i,o){
+                            if (o.state === 'like') {
+                                likeCount++;
+                            }
+                            else if (o.state === 'dislike') {
+                                dislikeCount++;
+                            }
+                        });
+
+                        $.each($scope.completedEvents,function(i,e){
+                            if (e.event_id == eventId) {
+                                e.likeCount = likeCount;
+                                e.dislikeCount = dislikeCount;
+                                return;
+                            }
+                        });
+                    });
+
+                    $scope.loading = false;
+            });
+        }
 
 
         // local functions
+
+        $scope.likeEvent = function(event) {
+            $scope.flagEvent(event, 'like');
+        }
+
+        $scope.dislikeEvent = function(event) {
+            $scope.flagEvent(event, 'dislike');
+        }
+
+        $scope.flagEvent = function(event, status) {
+            $scope.loading = true;
+            console.log('flagEvent '+event.event_id);
+            Teams.flagEvent(event.event_id, status)
+                .success(function(data) {
+                    $scope.loading = false;
+                    $scope.events = data;
+                });
+        }
 
         $scope.setCurrentTeam = function(teamId) {
             $scope.currentTeam = $scope.teamsById[teamId];
@@ -124,6 +241,10 @@ app.controller('mainController', ['$scope','$http','Teams','$window', function($
         $scope.showMore = function() {
             $scope.eventCount = $scope.eventCount + 3;
             $scope.$emit('tilesUpdated');
+        }
+
+        $scope.showMoreUpcoming = function() {
+            $scope.upcomingCount = $scope.upcomingCount + 3;
         }
 
         $scope.matchTeam = function(event){

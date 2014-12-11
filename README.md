@@ -8,7 +8,9 @@ Hopefully I'll get to a point where I include other metrics such as social media
 - Show final score as an option (DONE)
 - Publish feed to twitter/fb/rss
 - Configurable rating system
-- Indicate like/dislike game with initials
+- User can like/dislike game
+- Click team name in game to filter by team (DONE)
+- Show upcoming games (DONE)
 
 It was also created as an exercise to use the MEAN stack.  That is: MongoDB / Mongoose / Express / AngularJs / NodeJs.  A.k.a. "full stack javascript".
 

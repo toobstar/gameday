@@ -1,5 +1,6 @@
 var Event = require('./models/event');
 var Team = require('./models/team');
+var Opinion = require('./models/opinion');
 
 var https = require('https');
 var fs = require('fs');
@@ -60,7 +61,6 @@ function fetchTeamData() {
 
 var processEventResults = function(content) {
     apiCallInProgress = false;
-    console.log('print result ', content);
     var events = JSON.parse(content);
     events.forEach(function (event) {
         console.log('creating or updating: ',event);
@@ -69,9 +69,8 @@ var processEventResults = function(content) {
         Event.findOneAndUpdate(
             {event_id: event.event_id},
             event,
-            {upsert: true}, function(err, data){
-                console.log('Event.findOneAndUpdate result', err, data)
-                calcScores(event);
+            {upsert: true}, function(err, savedEvent){
+                console.log('Event.findOneAndUpdate result', err, savedEvent);
             });
     });
 }
@@ -358,6 +357,18 @@ function buildURL(host, sport, method, id, format, params) {
 
 
 
+function getOpinions(res) {
+    console.log('getOpinions');
+    Opinion.find(function (err, opinions) {
+        console.log('Opinion.find');
+
+        if (err)
+            res.send(err); // if there is an error retrieving, send the error. nothing after res.send(err) will execute
+
+        res.json(opinions);
+    });
+};
+
 function getTeams(res) {
     console.log('getTeams');
     Team.find(function (err, teams) {
@@ -382,6 +393,23 @@ function getEvents(res) {
     });
 };
 
+function getUpcomingEvents(res) {
+    console.log('getUpcomingEvents');
+    Event.find(function (err, events) {
+        console.log('Event.find');
+
+        if (err)
+            res.send(err)
+
+        var upcomingEvents = [];
+        _.each(events,function(event) {
+            if (!event.pointsBasedRating) {
+                upcomingEvents.push(event);
+            }
+        });
+        res.json(upcomingEvents);
+    });
+}
 function getCompletedEvents(res) {
     console.log('getCompletedEvents');
     Event.find(function (err, events) {
@@ -390,9 +418,7 @@ function getCompletedEvents(res) {
         if (err)
             res.send(err)
 
-        var now = moment().subtract(10, 'hours');
         var completedEvents = [];
-
         _.each(events,function(event) {
             if (event.pointsBasedRating) {
                 event.fullModel = null;// clear full model to make object lighter weight for UI
@@ -408,13 +434,13 @@ function calcScores(event) {
 
     if (event.fullModel && event.fullModel.home_period_scores && event.fullModel.away_period_scores) {
 
-        console.log("calcScores fullModel present ", event.event_id);
+        //console.log("calcScores fullModel present ", event.event_id);
 
         var hps = event.fullModel.home_period_scores;
         var aps = event.fullModel.away_period_scores;
 
-        console.log("hps",hps);
-        console.log("aps",aps);
+        //console.log("hps",hps);
+        //console.log("aps",aps);
 
         var homeWonQ1 = hps[0] > aps[0];
         var homeWonQ2 = hps[1] > aps[1];
@@ -456,18 +482,18 @@ function calcScores(event) {
         }
 
         scoreDif = scoreDif + (leadChanges*3);
-        console.log("leadChanges " + leadChanges + " adding " + (leadChanges*3) + " scoreDif now: " + scoreDif);
+        //console.log("leadChanges " + leadChanges + " adding " + (leadChanges*3) + " scoreDif now: " + scoreDif);
 
-//        console.log("hps",homeWonQ1,homeWonQ2,homeWonQ3,homeWonQ4);
-//        console.log("scoreDif",scoreDif);
-//        console.log("diffs",q1Dif,q2Dif,q3Dif,q4Dif);
+        //        console.log("hps",homeWonQ1,homeWonQ2,homeWonQ3,homeWonQ4);
+        //        console.log("scoreDif",scoreDif);
+        //        console.log("diffs",q1Dif,q2Dif,q3Dif,q4Dif);
 
         var totalDifference = (q1Dif+q2Dif+q3Dif+q4Dif);
         var finalDifference = q4Dif;
 
-//        console.log("leadChanges",leadChanges);
-//        console.log("totalDifference",totalDifference);
-//        console.log("finalDifference",finalDifference);
+        //        console.log("leadChanges",leadChanges);
+        //        console.log("totalDifference",totalDifference);
+        //        console.log("finalDifference",finalDifference);
 
         event.pointsTotalDiff = totalDifference;
         event.pointsFinalDiff = finalDifference;
@@ -487,9 +513,9 @@ function calcScores(event) {
         event.aussies = [];
         var ausPlayers = ['EXUM','BAIRSTOW','BOGUT','PATTY','MILLS','INGLES','DELLAVEDOVA','MOTUM','BAYNES'];
         _.each(event.fullModel.away_stats.concat(event.fullModel.home_stats),function(stat){
-          console.log("checking player: ", stat.display_name);
+            //console.log("checking player: ", stat.display_name);
             if (_.contains(ausPlayers, stat.last_name.toUpperCase())) {
-                console.log("--found aussie: ", stat.display_name, stat);
+                console.log("--found aussie: ", stat.display_name);
                 event.aussies.push(
                   {
                       'name':stat.display_name,
@@ -508,7 +534,6 @@ function calcScores(event) {
         });
         if (event.aussies.length > 0) {
             event.markModified('aussies');
-            console.log("saving event with aussie: ", event);
         }
     }
 
@@ -525,7 +550,7 @@ function calcScores(event) {
 
     event.save(function (err, event, numberAffected) {
         if (err) {
-            console.log('error saving ',err);
+            console.log('0-error saving ',err);
         }
     })
 
@@ -662,38 +687,7 @@ module.exports = function (app) {
         res.send('done')
     });
 
-    app.get('/api/initEvents/:team_id/:securityCode', function (req, res) {
-
-        if (SECURITY_CODE !== req.params.securityCode) {
-            console.log("invalid securityCode ", req.params.securityCode);
-            res.send('invalid');
-            return;
-        }
-
-        console.log('initEvents for '+req.params.team_id, req.params.securityCode);
-        teamIdQueue.push(req.params.team_id);
-        fetchTeamEvents();
-        res.send('done')
-    });
-
-    app.get('/api/updateEvent/:event_id/:securityCode', function (req, res) {
-        if (SECURITY_CODE !== req.params.securityCode) {
-            console.log("invalid securityCode ", req.params.securityCode);
-            res.send('invalid');
-            return;
-        }
-        console.log('updateEvent for '+req.params.event_id, req.params.securityCode);
-        fetchEventDetail(req.params.event_id);
-        getEvents(res);
-    });
-
     app.get('/api/boxScoreForCompleted/:securityCode', function (req, res) {
-
-        if (SECURITY_CODE !== req.params.securityCode) {
-            console.log("invalid securityCode ", req.params.securityCode);
-            res.send('invalid');
-            return;
-        }
 
         console.log('boxScoreForCompleted', req.params.securityCode);
 
@@ -703,9 +697,7 @@ module.exports = function (app) {
             return;
         }
 
-        var now = moment().subtract(10, 'hours');
         Event.find({},function (err, events) {
-
 
             if (err) {
                 console.log("error", err);
@@ -715,20 +707,38 @@ module.exports = function (app) {
 
             _.each(events,function(event){
 
-                var eventDate = moment(event.event_start_date_time);
-                if (eventDate.isAfter(now)) {
-                    console.log('after now ',event.event_start_date_time);
+                //var now = moment().subtract(10, 'hours');
+                //var eventDate = moment(event.event_start_date_time);
+                var eventStartDateETzone = moment(event.event_start_date_time).zone("-04:00");
+                var eventFinishDateETzone = eventStartDateETzone.clone().add(2, 'hours');
+                var nowETzone = moment().zone("-04:00");
+
+                if (event.event_id.indexOf('20141210-boston-') > -1) {
+                    //console.log('1)checking whether event happened yet.  eventDate: '+eventDate + " moment: " + moment() + " now (sub10): "+ now);
+                    //console.log('2)checking whether event happened yet.  eventDate: '+event.event_start_date_time + " now: " + (new Date()));
+                    //console.log('3)checking whether event happened yet.  eventDate: '+eventDate.format("dddd, MMMM Do YYYY, h:mm:ss a") + " now: " + nowETzone.format("dddd, MMMM Do YYYY, h:mm:ss a"));
+                    console.log('4)checking whether event happened yet.  eventStartDateETzone: '+eventStartDateETzone.format("dddd, MMMM Do YYYY, h:mm:ss a") +
+                        " eventFinishDateETzone: " + eventFinishDateETzone.format("dddd, MMMM Do YYYY, h:mm:ss a") +
+                        " now: " + nowETzone.format("dddd, MMMM Do YYYY, h:mm:ss a"));
+
+//                    xxxx  20141210-boston-celtics-at-charlotte-hornets
+//                    2)checking whether event happened yet.  eventDate: 2014-12-10T19:00:00-05:00 now: Thu Dec 11 2014 10:46:27 GMT+1100 (AEDT)
+//                    3)checking whether event happened yet.  eventDate: Thursday, December 11th 2014, 11:00:00 am now: Wednesday, December 10th 2014, 7:46:27 pm
+//                    4)checking whether event happened yet.  eventDate: Wednesday, December 10th 2014, 8:00:00 pm now: Wednesday, December 10th 2014, 7:46:27 pm
+                }
+
+                if (eventFinishDateETzone.isAfter(nowETzone)) {
+                    console.log('after now ',eventFinishDateETzone.format("dddd, MMMM Do YYYY, h:mm:ss a"));
                 }
                 else {
 
                     if (event.fullModel) {
-                        console.log('already loaded',event.event_start_date_time);
+                        //console.log('already set box score',event.event_start_date_time);
                         calcScores(event);
                     }
                     else {
-                        console.log('not yet loaded',event.event_start_date_time);
+                        console.log('XXXX not yet set box score',event.event_start_date_time);
                         eventIdQueue.push(event.event_id);
-
                     }
                 }
                 //console.log('boxScoreForCompleted ',event.event_id, event.event_start_date_time);
@@ -739,15 +749,32 @@ module.exports = function (app) {
         });
     });
 
-    app.get('/api/processEvent/:event_id/:securityCode', function (req, res) {
-        if (SECURITY_CODE !== req.params.securityCode) {
-            console.log("invalid securityCode ", req.params.securityCode);
-            res.send('invalid');
-            return;
-        }
+//    app.get('/api/processEvent/:event_id/:securityCode', function (req, res) {
+//        if (SECURITY_CODE !== req.params.securityCode) {
+//            console.log("invalid securityCode ", req.params.securityCode);
+//            res.send('invalid');
+//            return;
+//        }
+//
+//        console.log('processEvent for '+req.params.event_id, req.params.securityCode);
+//
+//        Event.findOne(
+//            {event_id: req.params.event_id},
+//            function(err, event){
+//                console.log('Event.findOne result', err, event)
+//                if (err) {
+//                    return "error"
+//                }
+//                calcScores(event);
+//            });
+//
+//
+//        getEvents(res);
+//    });
 
-        console.log('processEvent for '+req.params.event_id, req.params.securityCode);
+    app.get('/api/flagEvent/:event_id/:status', function (req, res) {
 
+        console.log('flagEvent for ',req.ip, req.params.event_id, req.params.status);
         Event.findOne(
             {event_id: req.params.event_id},
             function(err, event){
@@ -755,23 +782,33 @@ module.exports = function (app) {
                 if (err) {
                     return "error"
                 }
-                calcScores(event);
+                Opinion.findOneAndUpdate(
+                    {ip: req.ip, event_id: req.params.event_id},
+                    {ip: req.ip, event_id: req.params.event_id, state: req.params.status},
+                    {upsert: true}, function(err, data){
+                        console.log('Opinion.findOneAndUpdate result', err, data)
+                });
             });
+    });
 
-
-        getEvents(res);
+    app.get('/api/opinions', function (req, res) {
+        console.log('/api/opinions');
+        getOpinions(res);
     });
 
     app.get('/api/teams', function (req, res) {
-
         console.log('/api/teams');
         getTeams(res);
     });
 
     app.get('/api/completedEvents', function (req, res) {
-
         console.log('/api/completedEvents');
         getCompletedEvents(res);
+    });
+
+    app.get('/api/upcomingEvents', function (req, res) {
+        console.log('/api/upcomingEvents');
+        getUpcomingEvents(res);
     });
 
     app.get('/api/events', function (req, res) {

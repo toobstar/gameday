@@ -1,5 +1,5 @@
 var app = angular.module('teamController', ['ngRoute']);
-app.controller('adminController', ['$scope','$http','Teams', '$location', function($scope, $http, Teams, $location) {
+app.controller('adminController', ['$scope','$http','Teams', '$location', function($scope, $http, Teams) {
 
         $scope.securityCode = "";
 
@@ -58,7 +58,7 @@ app.controller('adminController', ['$scope','$http','Teams', '$location', functi
 		};
         $scope.initAllEvents = function() {
             $scope.loading = true;
-            console.log('initAllEvents ');
+            console.log('initAllEvents');
             Teams.initAllEvents($scope.securityCode)
                 .success(function(data) {
                     $scope.loading = false;
