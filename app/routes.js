@@ -302,7 +302,7 @@ function fetchData(method,params,resultProcessor, inputId) {
             if (res.statusCode !== 200) {
                 // handle error...
                 console.warn("Server did not return a 200 response!\n" + chunks.join(''));
-                apiCallInProgress == false;
+                apiCallInProgress = false;
                 return;
                 //process.exit(1);
             }
@@ -313,7 +313,7 @@ function fetchData(method,params,resultProcessor, inputId) {
                     if (err) {
                         console.warn("Error trying to decompress data: " + err.message);
                         //process.exit(1);
-                        apiCallInProgress == false;
+                        apiCallInProgress = false;
                         return;
                     }
                     resultProcessor(decoded, inputId);
@@ -325,7 +325,7 @@ function fetchData(method,params,resultProcessor, inputId) {
     }).on('error', function (err) {
             console.warn("Error trying to contact server: " + err.message);
             //process.exit(1);
-            apiCallInProgress == false;
+            apiCallInProgress = false;
             return;
         });
 }
