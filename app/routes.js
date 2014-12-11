@@ -107,7 +107,7 @@ var processEventDetailResults = function(content, eventId) {
 
 var eventIdQueue = [];
 var queuedFetchEventDetail = function() {
-    console.log('queuedFetchEventDetail ',eventIdQueue);
+    console.log('queuedFetchEventDetail apiCallInProgress ',apiCallInProgress,eventIdQueue);
     if (eventIdQueue.length > 0) {
         if (apiCallInProgress == false) {
             apiCallInProgress = true;
@@ -116,7 +116,7 @@ var queuedFetchEventDetail = function() {
             fetchEventDetail(eventId);
         }
 
-        console.log('queuedFetchEventDetail waiting 11s - queued: ' + eventIdQueue.length);
+        console.log('queuedFetchEventDetail waiting 11s - queued: ' + eventIdQueue.length, apiCallInProgress);
         setTimeout(function(){queuedFetchEventDetail()}, apiDelayBetweenCalls);
     }
 };
