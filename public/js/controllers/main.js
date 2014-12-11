@@ -254,10 +254,12 @@ app.controller('mainController', ['$scope','$http','Teams','$window', function($
 
         $scope.likeEvent = function(event) {
             $scope.flagEvent(event, 'like');
+            event.likeCount = event.likeCount+1;
         }
 
         $scope.dislikeEvent = function(event) {
             $scope.flagEvent(event, 'dislike');
+            event.dislikeCount = event.dislikeCount+1;
         }
 
         $scope.flagEvent = function(event, status) {
