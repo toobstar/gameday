@@ -189,8 +189,11 @@
                     <img src="img/aus.png" title="Show games with Australians" alt="Show games with Australians"/>
                     All
                 </span>
-                <span ng-click="toggleShowUpcoming()" class="textButton">
+                <span ng-click="toggleShowUpcoming()" class="textButton" ng-show="showUpcoming == false">
                     Show upcoming
+                </span>
+                <span ng-click="toggleShowUpcoming()" class="textButton" ng-show="showUpcoming == true">
+                    Hide upcoming
                 </span>
                 <span ng-click="showBest()" class="textButton" ng-show="showingBest == false">
                     Best by day
