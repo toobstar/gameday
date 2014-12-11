@@ -732,7 +732,7 @@ module.exports = function (app) {
                 }
                 else {
 
-                    if (event.fullModel) {
+                    if (event.fullModel && event.fullModel.home_period_scores && event.fullModel.away_period_scores) {
                         //console.log('already set box score',event.event_start_date_time);
                         calcScores(event);
                     }
