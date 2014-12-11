@@ -85,7 +85,7 @@ app.controller('mainController', ['$scope','$http','Teams','$window', function($
 
 		$scope.loading = true;
 		$scope.eventCount = 10;
-		$scope.upcomingCount = 5;
+		$scope.upcomingCount = 3;
         $scope.currentTeam = null;
         $scope.currentRating = null;
         $scope.currentChatter = 1000;
