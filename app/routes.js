@@ -124,29 +124,30 @@ var queuedFetchEventDetail = function() {
 var lookup = {};
 lookup['atlanta-hawks']='#Hawks,#ATLHawks';
 lookup['boston-celtics']='#Celtics';
-lookup['brooklyn-nets']='#Bobcats';
-lookup['charlotte-hornets']='#Bulls';
-lookup['chicago-bulls']='#Cavs, #Cavaliers';
-lookup['cleveland-cavaliers']='#Mavs';
-lookup['dallas-mavericks']='#Nuggets';
-lookup['denver-nuggets']='#Pistons';
-lookup['detroit-pistons']='#Warriors,#GSWarriors';
-lookup['golden-state-warriors']='#Rockets';
-lookup['houston-rockets']='#Pacers';
-lookup['indiana-pacers']='#Clippers';
-lookup['los-angeles-clippers']='#Lakers';
-lookup['los-angeles-lakers']='#Grizzlies';
-lookup['memphis-grizzlies']='#MiamiHeat';
-lookup['miami-heat']='#Bucks';
-lookup['milwaukee-bucks']='#TWolves, #Timberwolves';
-lookup['minnesota-timberwolves']='#Nets';
-lookup['new-orleans-pelicans']='#Hornets';
+lookup['brooklyn-nets']='#Nets';
+lookup['charlotte-hornets']='#Hornets,#Bobcats';
+lookup['chicago-bulls']='#Bulls';
+lookup['cleveland-cavaliers']='#Cavs, #Cavaliers';
+lookup['dallas-mavericks']='#Mavs';
+lookup['denver-nuggets']='#Nuggets';
+lookup['detroit-pistons']='#Pistons';
+lookup['golden-state-warriors']='#Warriors,#GSWarriors';
+lookup['houston-rockets']='#Rockets';
+lookup['indiana-pacers']='#Pacers';
+lookup['los-angeles-clippers']='#Clippers';
+lookup['los-angeles-lakers']='#Lakers';
+lookup['memphis-grizzlies']='#Grizzlies';
+lookup['miami-heat']='#MiamiHeat';
+lookup['milwaukee-bucks']='#Bucks';
+lookup['minnesota-timberwolves']='#TWolves, #Timberwolves';
+lookup['new-orleans-pelicans']='#pelicans';
 lookup['new-york-knicks']='#Knicks';
 lookup['oklahoma-city-thunder']='#okcthunder,#OklahomaCityThunder';
 lookup['orlando-magic']='#OrlandoMagic, #Magic';
 lookup['philadelphia-76ers']='#76ers';
 lookup['phoenix-suns']='#Suns';
-lookup['portland-trail-blazers']='#TrailBlazers,#Blazers';
+lookup['portland-trail-blazers']='#TrailBlazers';
+//lookup['portland-trail-blazers']='#TrailBlazers,#Blazers';
 lookup['sacramento-kings']='#NBAKings';
 lookup['san-antonio-spurs']='#GoSpursGo,#Spurs';
 lookup['toronto-raptors']='#Raptors';
@@ -187,40 +188,68 @@ function fetchTwitterDetail(eventId) {
             var awayTags = lookup[event.away_team_id];
             var homeTags = lookup[event.home_team_id];
 
+            var startDate = moment(event.event_start_date_time);
             var finishDate = moment(event.event_start_date_time).add(2, 'days');
-
-            var searchParams = {};
-            searchParams['count'] = 100;
-            searchParams['until'] = finishDate.format('YYYY-MM-DD');
 
             event.twitterScore = 0;
 
             _.each(awayTags.split(','),function(awayTag) {
                 console.log('awayTag',awayTag);
-                searchParams['q'] = encodeURIComponent(awayTag);
-                askTwitter(event, searchParams);
+                var searchParams =
+                {
+                    q: awayTag
+                    , since: startDate.format('YYYY-MM-DD')
+                    , until: finishDate.format('YYYY-MM-DD')
+                    , result_type: 'recent'
+                    , include_entities: false
+                    , count: 100
+                };
+
+                askTwitter(event, searchParams, 0);
             });
 
             _.each(homeTags.split(','),function(homeTag) {
                 console.log('homeTag',homeTag);
-                searchParams['q'] = encodeURIComponent(homeTag);
-                askTwitter(event, searchParams);
+                var searchParams =
+                {
+                    q: homeTag
+                    , since: startDate.format('YYYY-MM-DD')
+                    , until: finishDate.format('YYYY-MM-DD')
+                    , result_type: 'recent'
+                    , include_entities: false
+                    , count: 100
+                };
+
+                askTwitter(event, searchParams, 0);
             });
 
-            _.each(awayTags.split(','),function(awayTag) {
-                _.each(homeTags.split(','),function(homeTag) {
-                    var searchQuery = awayTag + ' ' + homeTag;
-                    console.log('tags',searchQuery);
-                    searchParams['q'] = encodeURIComponent(searchQuery);
-                    askTwitter(event, searchParams);
+            _.each(homeTags.split(','),function(homeTag) {
+                _.each(awayTags.split(','),function(awayTag) {
+                    console.log('homeTag and awayTag',homeTag,awayTag);
+                    var searchParams =
+                    {
+                        q: awayTag + ' ' + homeTag
+                        , since: startDate.format('YYYY-MM-DD')
+                        , until: finishDate.format('YYYY-MM-DD')
+                        , result_type: 'recent'
+                        , include_entities: false
+                        , count: 100
+                    };
+
+                    askTwitter(event, searchParams, 0);
                 });
             });
 
         });
 }
 
-function askTwitter(event, searchParams) {
-    console.log('doing twitter search for query: ',searchParams);
+function askTwitter(event, searchParams, iterationCount) {
+    console.log('');
+    console.log('');
+    console.log('doing twitter search for query: ',iterationCount);
+    if (iterationCount > 3) {
+        return;
+    }
     T.get('search/tweets', searchParams, function(err, data, response) {
         apiCallInProgress = false;
         if (err) {
@@ -228,14 +257,25 @@ function askTwitter(event, searchParams) {
         }
         else {
 
+            var resultCount = data.statuses.length;
+            console.log("twitter result",resultCount,searchParams);
+
+            var smallestId = null;
             _.each(data.statuses,function(tweet) {
-                console.log("---");
-                console.log("---");
-                console.log("tweet: ",tweet.created_at);
-                console.log("tweet: ",tweet.text );
-                console.log("---");
-                console.log("---");
+
+                if (!smallestId || tweet.id < smallestId) {
+                    smallestId = tweet.id;
+                }
             });
+
+            event.twitterScore = event.twitterScore + resultCount;
+            console.log('XXXXXX setting score for '+event.event_id, event.twitterScore);
+
+            if (resultCount == 100 && data.search_metadata.max_id) {
+                searchParams['max_id'] = smallestId;
+                iterationCount++;
+                askTwitter(event, searchParams, iterationCount)
+            }
 
 
 //            console.log('0- setting score for '+event.event_id, event.twitterScore, searchParams, data.statuses.length);
@@ -581,13 +621,9 @@ module.exports = function (app) {
             return;
         }
 
-        var searchQuery = '#Warriors #OrlandoMagic  since:2014-11-26 until:2014-11-28';
+        eventIdTwitterQueue.push('20141207-portland-trail-blazers-at-new-york-knicks');
+        queuedFetchEventTwitterDetail();
 
-        T.get('search/tweets', {
-            q: searchQuery, count: 100 }, function(err, data, response) {
-                //console.log(data);
-                console.log(searchQuery, data.statuses.length);
-        })
         res.send('done')
     });
 
@@ -625,7 +661,7 @@ module.exports = function (app) {
                     }
                     else {
                         console.log('not yet loaded',event.event_id);
-                        if (eventIdTwitterQueue.length < 10) {  // TODO limit while testing
+                        if (event.pointsBasedRating == 'A' &&  eventIdTwitterQueue.length < 10) {  // TODO limit while testing
                             eventIdTwitterQueue.push(event.event_id);
                         }
                     }
