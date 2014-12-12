@@ -103,15 +103,17 @@
         }
 
         .textButton {
-            width: 100%;
             padding: 5px 15px 10px;
-            margin-top: 50px;
+            margin-left: 10px;
+            margin-bottom: 10px;
             font-size: 18px;
             color: #334;
             text-shadow: 1px 1px 0 #fff;
             background: rgba(240, 240,240,.6);
             border-radius: 2px 2px 0 0;
             white-space:nowrap;
+            display:inline-block;
+            vertical-align: middle;
         }
 
         .eve .title,.blk .title{
@@ -174,7 +176,7 @@
 		</div>
 
 		<div class="row">
-            <div style="margin-bottom: 20px">
+            <div style="margin-bottom: 10px;">
                 <select ng-model="currentTeam" ng-options="team.full_name for team in teams" style="margin:22px 9px 20px;">
                     <option value=""> Team </option>
                 </select>

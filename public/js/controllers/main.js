@@ -49,8 +49,17 @@ app.directive('masonryWallDir', function(){
                     setTimeout(function(){
                         console.log('tilesUpdated delayed reload');
                         self.debouncedReload();
-                    }, 300);
+                    }, 100);
 
+                    setTimeout(function(){
+                        console.log('tilesUpdated delayed reload');
+                        self.debouncedReload();
+                    }, 1000);
+
+                    setTimeout(function(){
+                        console.log('tilesUpdated delayed reload');
+                        self.debouncedReload();
+                    }, 5000);
 
                 });
             }
