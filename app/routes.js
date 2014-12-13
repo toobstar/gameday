@@ -146,15 +146,44 @@ lookup['oklahoma-city-thunder']='#okcthunder,#OklahomaCityThunder';
 lookup['orlando-magic']='#OrlandoMagic, #Magic';
 lookup['philadelphia-76ers']='#76ers';
 lookup['phoenix-suns']='#Suns';
-lookup['portland-trail-blazers']='#TrailBlazers';
-//lookup['portland-trail-blazers']='#TrailBlazers,#Blazers';
+lookup['portland-trail-blazers']='#TrailBlazers,#Blazers,#RipCity';
 lookup['sacramento-kings']='#NBAKings';
 lookup['san-antonio-spurs']='#GoSpursGo,#Spurs';
 lookup['toronto-raptors']='#Raptors';
 lookup['utah-jazz']='#UtahJazz';
 lookup['washington-wizards']='#Wizards';
 
-
+var lookup2 = {};
+lookup2['atlanta-hawks']='ATL';
+lookup2['boston-celtics']='BOS';
+lookup2['brooklyn-nets']='BKN';
+lookup2['charlotte-hornets']='CHA';
+lookup2['chicago-bulls']='CHI';
+lookup2['cleveland-cavaliers']='CAV';
+lookup2['dallas-mavericks']='DAL';
+lookup2['denver-nuggets']='DEN';
+lookup2['detroit-pistons']='DET';
+lookup2['golden-state-warriors']='GSW';
+lookup2['houston-rockets']='HOU';
+lookup2['indiana-pacers']='IND';
+lookup2['los-angeles-clippers']='LAC';
+lookup2['los-angeles-lakers']='LAL';
+lookup2['memphis-grizzlies']='MEM';
+lookup2['miami-heat']='MIA';
+lookup2['milwaukee-bucks']='MIL';
+lookup2['minnesota-timberwolves']='MIN';
+lookup2['new-orleans-pelicans']='PEL';
+lookup2['new-york-knicks']='NYK';
+lookup2['oklahoma-city-thunder']='OKC';
+lookup2['orlando-magic']='ORL';
+lookup2['philadelphia-76ers']='PHI';
+lookup2['phoenix-suns']='SUN';
+lookup2['portland-trail-blazers']='POR';
+lookup2['sacramento-kings']='SAC';
+lookup2['san-antonio-spurs']='SAS';
+lookup2['toronto-raptors']='TOR';
+lookup2['utah-jazz']='UTA';
+lookup2['washington-wizards']='WAS';
 
 
 var eventIdTwitterQueue = [];
@@ -193,52 +222,92 @@ function fetchTwitterDetail(eventId) {
 
             event.twitterScore = 0;
 
-            _.each(awayTags.split(','),function(awayTag) {
-                console.log('awayTag',awayTag);
-                var searchParams =
-                {
-                    q: awayTag
-                    , since: startDate.format('YYYY-MM-DD')
-                    , until: finishDate.format('YYYY-MM-DD')
-                    , result_type: 'recent'
-                    , include_entities: false
-                    , count: 100
-                };
+            var awayCode = lookup2[event.away_team_id];
+            var homeCode = lookup2[event.home_team_id];
+            var searchParams =
+            {
+              q: '#' + awayCode + 'at' + homeCode
+              , since: startDate.format('YYYY-MM-DD')
+              , until: finishDate.format('YYYY-MM-DD')
+              , result_type: 'recent'
+              , include_entities: false
+              , count: 100
+            };
+            askTwitter(event, searchParams, 0);
 
-                askTwitter(event, searchParams, 0);
-            });
+            // Team.findOne(
+            //   {team_id: event.away_team_id},
+            //   function(err, awayTeam){
+            //     console.log('Team.awayTeam', err, awayTeam.abbreviation);
+            //
+            //     Team.findOne(
+            //       {team_id: event.home_team_id},
+            //       function(err, homeTeam){
+            //         console.log('Team.homeTeam', err, homeTeam.abbreviation);
+            //
+            //         var searchParams =
+            //         {
+            //           q: '#' + awayTeam.abbreviation + 'at' + homeTeam.abbreviation
+            //           , since: startDate.format('YYYY-MM-DD')
+            //           , until: finishDate.format('YYYY-MM-DD')
+            //           , result_type: 'recent'
+            //           , include_entities: false
+            //           , count: 100
+            //         };
+            //
+            //         askTwitter(event, searchParams, 0);
+            //
+            //     });
+            //
+            // });
 
-            _.each(homeTags.split(','),function(homeTag) {
-                console.log('homeTag',homeTag);
-                var searchParams =
-                {
-                    q: homeTag
-                    , since: startDate.format('YYYY-MM-DD')
-                    , until: finishDate.format('YYYY-MM-DD')
-                    , result_type: 'recent'
-                    , include_entities: false
-                    , count: 100
-                };
 
-                askTwitter(event, searchParams, 0);
-            });
-
-            _.each(homeTags.split(','),function(homeTag) {
-                _.each(awayTags.split(','),function(awayTag) {
-                    console.log('homeTag and awayTag',homeTag,awayTag);
-                    var searchParams =
-                    {
-                        q: awayTag + ' ' + homeTag
-                        , since: startDate.format('YYYY-MM-DD')
-                        , until: finishDate.format('YYYY-MM-DD')
-                        , result_type: 'recent'
-                        , include_entities: false
-                        , count: 100
-                    };
-
-                    askTwitter(event, searchParams, 0);
-                });
-            });
+            // _.each(awayTags.split(','),function(awayTag) {
+            //     console.log('awayTag',awayTag);
+            //     var searchParams =
+            //     {
+            //         q: awayTag
+            //         , since: startDate.format('YYYY-MM-DD')
+            //         , until: finishDate.format('YYYY-MM-DD')
+            //         , result_type: 'recent'
+            //         , include_entities: false
+            //         , count: 100
+            //     };
+            //
+            //     askTwitter(event, searchParams, 0);
+            // });
+            //
+            // _.each(homeTags.split(','),function(homeTag) {
+            //     console.log('homeTag',homeTag);
+            //     var searchParams =
+            //     {
+            //         q: homeTag
+            //         , since: startDate.format('YYYY-MM-DD')
+            //         , until: finishDate.format('YYYY-MM-DD')
+            //         , result_type: 'recent'
+            //         , include_entities: false
+            //         , count: 100
+            //     };
+            //
+            //     askTwitter(event, searchParams, 0);
+            // });
+            //
+            // _.each(homeTags.split(','),function(homeTag) {
+            //     _.each(awayTags.split(','),function(awayTag) {
+            //         console.log('homeTag and awayTag',homeTag,awayTag);
+            //         var searchParams =
+            //         {
+            //             q: awayTag + ' ' + homeTag
+            //             , since: startDate.format('YYYY-MM-DD')
+            //             , until: finishDate.format('YYYY-MM-DD')
+            //             , result_type: 'recent'
+            //             , include_entities: false
+            //             , count: 100
+            //         };
+            //
+            //         askTwitter(event, searchParams, 0);
+            //     });
+            // });
 
         });
 }
