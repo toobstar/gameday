@@ -234,7 +234,7 @@
                         <img ng-src="img/logos/{{teamsById[event.away_team_id].abbreviation}}.gif" alt="" style="max-height: 40px"/>
                     </div>
                     <div class="summary" title="Exact Rating: {{event.pointsBasedScore}}">
-                        Rating {{event.pointsBasedRating}}
+                        Rating {{event.pointsBasedRating}} {{event.event_id}}
                         <span ng-if="event.twitterScore"><br/>Chatter {{event.twitterScore}}</span>
                     </div>
                     <div class="note" ng-if="event.finalScore" style="float: right">

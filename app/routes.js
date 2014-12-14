@@ -186,21 +186,7 @@ lookup2['utah-jazz']='UTA';
 lookup2['washington-wizards']='WAS';
 
 
-var eventIdTwitterQueue = [];
-var queuedFetchEventTwitterDetail = function() {
-    console.log('queuedFetchEventTwitterDetail ',eventIdTwitterQueue);
-    if (eventIdTwitterQueue.length > 0) {
-        if (apiCallInProgress == false) {
-            apiCallInProgress = true;
-            var eventId = eventIdTwitterQueue.shift();
-            console.log('queuedFetchEventTwitterDetail scheduled ',eventId);
-            fetchTwitterDetail(eventId);
-        }
 
-        console.log('queuedFetchEventTwitterDetail waiting 8s - queued: ' + eventIdTwitterQueue.length);
-        setTimeout(function(){queuedFetchEventTwitterDetail()}, 8000);
-    }
-};
 
 function fetchTwitterDetail(eventId) {
 
@@ -233,7 +219,8 @@ function fetchTwitterDetail(eventId) {
               , include_entities: false
               , count: 100
             };
-            askTwitter(event, searchParams, 0);
+            //askTwitter(eventId, searchParams, 0);
+            eventIdTwitterQueue.push([eventId, searchParams, 0]);
 
             // Team.findOne(
             //   {team_id: event.away_team_id},
@@ -312,49 +299,78 @@ function fetchTwitterDetail(eventId) {
         });
 }
 
-function askTwitter(event, searchParams, iterationCount) {
+var eventIdTwitterQueue = [];
+var processTwitterQueue = function() {
+  console.log('processTwitterQueue ',eventIdTwitterQueue);
+  if (eventIdTwitterQueue.length > 0) {
+    if (apiCallInProgress == false) {
+      apiCallInProgress = true;
+      var twitQueue = eventIdTwitterQueue.shift();
+      var eventId = twitQueue[0];
+      var searchParams = twitQueue[1];
+      var iterationCount = twitQueue[2];
+      console.log('processTwitterQueue scheduled ',eventId);
+      askTwitter(eventId, searchParams, iterationCount);
+    }
+
+    console.log('processTwitterQueue waiting 6s - queued: ' + eventIdTwitterQueue.length);
+    setTimeout(function(){processTwitterQueue()}, 6000);
+  }
+};
+
+function askTwitter(eventId, searchParams, iterationCount) {
     console.log('');
     console.log('');
     console.log('doing twitter search for query: ',iterationCount);
-    if (iterationCount > 3) {
+    if (iterationCount > 5) {
         return;
     }
-    T.get('search/tweets', searchParams, function(err, data, response) {
-        apiCallInProgress = false;
-        if (err) {
-            console.log('error with twitter search', searchParams, err);
-        }
-        else {
 
-            var resultCount = data.statuses.length;
-            console.log("twitter result",resultCount,searchParams);
+    Event.findOne(
+       {event_id: eventId},
+       function(err, event){
+           if (err) {
+               return "error"
+           }
 
-            var smallestId = null;
-            _.each(data.statuses,function(tweet) {
+          T.get('search/tweets', searchParams, function(err, data, response) {
+              apiCallInProgress = false;
+              if (err) {
+                  console.log('error with twitter search', searchParams, err);
+              }
+              else {
 
-                if (!smallestId || tweet.id < smallestId) {
-                    smallestId = tweet.id;
-                }
-            });
+                  var resultCount = data.statuses.length;
+                  console.log("twitter result",resultCount,searchParams);
 
-            event.twitterScore = event.twitterScore + resultCount;
-            console.log('XXXXXX setting score for '+event.event_id, event.twitterScore);
+                  var smallestId = null;
+                  _.each(data.statuses,function(tweet) {
 
-            if (resultCount == 100 && data.search_metadata.max_id) {
-                searchParams['max_id'] = smallestId;
-                iterationCount++;
-                askTwitter(event, searchParams, iterationCount)
-            }
+                      if (!smallestId || tweet.id < smallestId) {
+                          smallestId = tweet.id;
+                      }
+                  });
+
+                  event.twitterScore = event.twitterScore + resultCount;
+                  console.log('XXXXXX setting score for '+event.event_id, event.twitterScore);
+
+                  if (resultCount == 100 && data.search_metadata.max_id) {
+                      searchParams['max_id'] = smallestId;
+                      iterationCount++;
+                      eventIdTwitterQueue.push([eventId, searchParams, iterationCount]);
+                      //askTwitter(event, searchParams, iterationCount)
+                  }
 
 
-//            console.log('0- setting score for '+event.event_id, event.twitterScore, searchParams, data.statuses.length);
-//            event.twitterScore = parseInt(event.twitterScore) + parseInt(data.statuses.length);
-//            console.log('1- setting score for '+event.event_id, event.twitterScore);
-//            event.save();
-//            console.log("debug.. ",data);
-        }
-        //console.log("debug.. ",response);
-    })
+      //            console.log('0- setting score for '+event.event_id, event.twitterScore, searchParams, data.statuses.length);
+      //            event.twitterScore = parseInt(event.twitterScore) + parseInt(data.statuses.length);
+      //            console.log('1- setting score for '+event.event_id, event.twitterScore);
+      //            event.save();
+      //            console.log("debug.. ",data);
+              }
+              //console.log("debug.. ",response);
+          })
+      });
 }
 
 function fetchEventDetail(eventId) {
@@ -690,8 +706,10 @@ module.exports = function (app) {
             return;
         }
 
-        eventIdTwitterQueue.push('20141207-portland-trail-blazers-at-new-york-knicks');
-        queuedFetchEventTwitterDetail();
+        fetchTwitterDetail('20141210-philadelphia-76ers-at-atlanta-hawks');
+        //eventIdTwitterQueue.push('20141207-portland-trail-blazers-at-new-york-knicks');
+        //queuedFetchEventTwitterDetail();
+        setTimeout(function(){processTwitterQueue()}, 2000);
 
         res.send('done')
     });
@@ -731,13 +749,15 @@ module.exports = function (app) {
                     else {
                         console.log('not yet loaded',event.event_id);
                         if (event.pointsBasedRating == 'A' &&  eventIdTwitterQueue.length < 10) {  // TODO limit while testing
-                            eventIdTwitterQueue.push(event.event_id);
+                            //eventIdTwitterQueue.push(event.event_id);
+                            fetchTwitterDetail(event.event_id);
                         }
                     }
                 }
             });
 
-            queuedFetchEventTwitterDetail();
+            //queuedFetchEventTwitterDetail();
+            processTwitterQueue();
 
             res.send('done')
         });
