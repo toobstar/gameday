@@ -301,7 +301,7 @@ var processTwitterQueue = function() {
     }
 
       // delay: twitter rate limit is 450/15 min = (15*60)/450 <= 1 every 2 seconds
-    console.log('processTwitterQueue waiting 3s - queued: ' + eventIdTwitterQueue.length, queueUnchangedCount);
+    console.log('processTwitterQueue waiting 5s - queued: ' + eventIdTwitterQueue.length, queueUnchangedCount);
 
     // simple queue manager
     if (prevQueueLength == eventIdTwitterQueue.length && eventIdTwitterQueue.length > 0) {
@@ -316,7 +316,7 @@ var processTwitterQueue = function() {
         apiCallInProgress = false;
     }
     prevQueueLength = eventIdTwitterQueue.length;
-    setTimeout(function(){processTwitterQueue()}, 3000);
+    setTimeout(function(){processTwitterQueue()}, 5000);
   }
 };
 
