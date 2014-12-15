@@ -1,6 +1,7 @@
 var Event = require('./models/event');
 var Team = require('./models/team');
 var Opinion = require('./models/opinion');
+var Tweet = require('./models/tweet');
 
 var https = require('https');
 var fs = require('fs');
@@ -204,12 +205,17 @@ function fetchTwitterDetail(eventId) {
             var homeTags = lookup[event.home_team_id];
 
             var startDate = moment(event.event_start_date_time);
-            var finishDate = moment(event.event_start_date_time).add(2, 'days');
+            var finishDate = moment(event.event_start_date_time).add(1, 'days');
 
             event.twitterScore = 0;
+            event.save(); // reset score
 
             var awayCode = lookup2[event.away_team_id];
             var homeCode = lookup2[event.home_team_id];
+
+            /*
+                  First try and match hashtag format #AWAYatHOME
+             */
             var searchParams =
             {
               q: '#' + awayCode + 'at' + homeCode
@@ -219,89 +225,69 @@ function fetchTwitterDetail(eventId) {
               , include_entities: false
               , count: 100
             };
-            //askTwitter(eventId, searchParams, 0);
             eventIdTwitterQueue.push([eventId, searchParams, 0]);
 
-            // Team.findOne(
-            //   {team_id: event.away_team_id},
-            //   function(err, awayTeam){
-            //     console.log('Team.awayTeam', err, awayTeam.abbreviation);
-            //
-            //     Team.findOne(
-            //       {team_id: event.home_team_id},
-            //       function(err, homeTeam){
-            //         console.log('Team.homeTeam', err, homeTeam.abbreviation);
-            //
-            //         var searchParams =
-            //         {
-            //           q: '#' + awayTeam.abbreviation + 'at' + homeTeam.abbreviation
-            //           , since: startDate.format('YYYY-MM-DD')
-            //           , until: finishDate.format('YYYY-MM-DD')
-            //           , result_type: 'recent'
-            //           , include_entities: false
-            //           , count: 100
-            //         };
-            //
-            //         askTwitter(event, searchParams, 0);
-            //
-            //     });
-            //
-            // });
+            /*
+                Second just match   #AWAY
+             */
+            _.each(awayTags.split(','),function(awayTag) {
+                 console.log('awayTag',awayTag);
+                 var searchParams =
+                 {
+                     q: awayTag
+                     , since: startDate.format('YYYY-MM-DD')
+                     , until: finishDate.format('YYYY-MM-DD')
+                     , result_type: 'recent'
+                     , include_entities: false
+                     , count: 100
+                 };
 
+                 eventIdTwitterQueue.push([eventId, searchParams, 0]);
+            });
 
-            // _.each(awayTags.split(','),function(awayTag) {
-            //     console.log('awayTag',awayTag);
-            //     var searchParams =
-            //     {
-            //         q: awayTag
-            //         , since: startDate.format('YYYY-MM-DD')
-            //         , until: finishDate.format('YYYY-MM-DD')
-            //         , result_type: 'recent'
-            //         , include_entities: false
-            //         , count: 100
-            //     };
-            //
-            //     askTwitter(event, searchParams, 0);
-            // });
-            //
-            // _.each(homeTags.split(','),function(homeTag) {
-            //     console.log('homeTag',homeTag);
-            //     var searchParams =
-            //     {
-            //         q: homeTag
-            //         , since: startDate.format('YYYY-MM-DD')
-            //         , until: finishDate.format('YYYY-MM-DD')
-            //         , result_type: 'recent'
-            //         , include_entities: false
-            //         , count: 100
-            //     };
-            //
-            //     askTwitter(event, searchParams, 0);
-            // });
-            //
-            // _.each(homeTags.split(','),function(homeTag) {
-            //     _.each(awayTags.split(','),function(awayTag) {
-            //         console.log('homeTag and awayTag',homeTag,awayTag);
-            //         var searchParams =
-            //         {
-            //             q: awayTag + ' ' + homeTag
-            //             , since: startDate.format('YYYY-MM-DD')
-            //             , until: finishDate.format('YYYY-MM-DD')
-            //             , result_type: 'recent'
-            //             , include_entities: false
-            //             , count: 100
-            //         };
-            //
-            //         askTwitter(event, searchParams, 0);
-            //     });
-            // });
+            /*
+                Third just match:    #HOME
+             */
+            _.each(homeTags.split(','),function(homeTag) {
+                 console.log('homeTag',homeTag);
+                 var searchParams =
+                 {
+                     q: homeTag
+                     , since: startDate.format('YYYY-MM-DD')
+                     , until: finishDate.format('YYYY-MM-DD')
+                     , result_type: 'recent'
+                     , include_entities: false
+                     , count: 100
+                 };
+
+                 eventIdTwitterQueue.push([eventId, searchParams, 0]);
+            });
+
+            /*
+                Fourth match:         #HOME #AWAY
+             */
+            _.each(homeTags.split(','),function(homeTag) {
+                 _.each(awayTags.split(','),function(awayTag) {
+                     console.log('homeTag and awayTag',homeTag,awayTag);
+                     var searchParams =
+                     {
+                         q: awayTag + ' ' + homeTag
+                         , since: startDate.format('YYYY-MM-DD')
+                         , until: finishDate.format('YYYY-MM-DD')
+                         , result_type: 'recent'
+                         , include_entities: false
+                         , count: 100
+                     };
+
+                     eventIdTwitterQueue.push([eventId, searchParams, 0]);
+                 });
+            });
 
         });
 }
 
 var eventIdTwitterQueue = [];
 var processTwitterQueue = function() {
-  console.log('processTwitterQueue ',eventIdTwitterQueue);
   if (eventIdTwitterQueue.length > 0) {
     if (apiCallInProgress == false) {
       apiCallInProgress = true;
@@ -309,20 +295,21 @@ var processTwitterQueue = function() {
       var eventId = twitQueue[0];
       var searchParams = twitQueue[1];
       var iterationCount = twitQueue[2];
-      console.log('processTwitterQueue scheduled ',eventId);
       askTwitter(eventId, searchParams, iterationCount);
     }
 
-    console.log('processTwitterQueue waiting 6s - queued: ' + eventIdTwitterQueue.length);
-    setTimeout(function(){processTwitterQueue()}, 6000);
+      // delay: twitter rate limit is 450/15 min = (15*60)/450 <= 1 every 2 seconds
+    console.log('processTwitterQueue waiting 3s - queued: ' + eventIdTwitterQueue.length);
+    setTimeout(function(){processTwitterQueue()}, 3000);
   }
 };
 
 function askTwitter(eventId, searchParams, iterationCount) {
     console.log('');
     console.log('');
-    console.log('doing twitter search for query: ',iterationCount);
-    if (iterationCount > 5) {
+    console.log('doing twitter search for query: ',searchParams.q, iterationCount);
+    if (iterationCount > 10) {
+        console.log('XXX reached max iteration count: ',searchParams.q, iterationCount);
         return;
     }
 
@@ -341,7 +328,7 @@ function askTwitter(eventId, searchParams, iterationCount) {
               else {
 
                   var resultCount = data.statuses.length;
-                  console.log("twitter result",resultCount,searchParams);
+                  console.log("twitter result: " + resultCount + " for iteration " + iterationCount,searchParams.q);
 
                   var smallestId = null;
                   _.each(data.statuses,function(tweet) {
@@ -349,26 +336,33 @@ function askTwitter(eventId, searchParams, iterationCount) {
                       if (!smallestId || tweet.id < smallestId) {
                           smallestId = tweet.id;
                       }
+
+                      Tweet.findOneAndUpdate(
+                          {twitterId: tweet.id},
+                          {event_id: eventId,
+                              searchParam: searchParams.q,
+                              text: tweet.text,
+                              created: tweet.created_at,
+                              twitterId: tweet.id
+                          },
+                          {upsert: true}, function(err, data){
+                              if (err) {
+                                console.log('Tweet.findOneAndUpdate result', err, data, tweet);
+                              }
+                          });
+
                   });
 
                   event.twitterScore = event.twitterScore + resultCount;
-                  console.log('XXXXXX setting score for '+event.event_id, event.twitterScore);
+                  console.log('XXX setting score for '+event.event_id, event.twitterScore);
+                  event.save();
 
                   if (resultCount == 100 && data.search_metadata.max_id) {
                       searchParams['max_id'] = smallestId;
                       iterationCount++;
                       eventIdTwitterQueue.push([eventId, searchParams, iterationCount]);
-                      //askTwitter(event, searchParams, iterationCount)
                   }
-
-
-      //            console.log('0- setting score for '+event.event_id, event.twitterScore, searchParams, data.statuses.length);
-      //            event.twitterScore = parseInt(event.twitterScore) + parseInt(data.statuses.length);
-      //            console.log('1- setting score for '+event.event_id, event.twitterScore);
-      //            event.save();
-      //            console.log("debug.. ",data);
               }
-              //console.log("debug.. ",response);
           })
       });
 }
@@ -494,15 +488,12 @@ function getOpinions(req, res) {
             res.send(err); // if there is an error retrieving, send the error. nothing after res.send(err) will execute
 
         _.each(opinions,function(op) {
-            console.log("comparing",op.ip, req.ip);
             if (op.ip == req.ip) {
                 op.userVoted = "true";
-                console.log("match",op.userVoted);
-                console.log("match",op);
             }
         });
 
-        console.log("opinions",opinions);
+        //console.log("opinions",opinions);
         res.json(opinions);
     });
 };
@@ -706,9 +697,7 @@ module.exports = function (app) {
             return;
         }
 
-        fetchTwitterDetail('20141210-philadelphia-76ers-at-atlanta-hawks');
-        //eventIdTwitterQueue.push('20141207-portland-trail-blazers-at-new-york-knicks');
-        //queuedFetchEventTwitterDetail();
+        fetchTwitterDetail('20141209-miami-heat-at-phoenix-suns');
         setTimeout(function(){processTwitterQueue()}, 2000);
 
         res.send('done')
@@ -726,8 +715,9 @@ module.exports = function (app) {
         console.log('twitterForCompleted');
 
         var now = moment().subtract(10, 'hours');
-        Event.find({},function (err, events) {
+        var twitterSearchLimit = moment().subtract(8, 'days');
 
+        Event.find({},function (err, events) {
 
             if (err) {
                 console.log("error", err);
@@ -738,26 +728,21 @@ module.exports = function (app) {
             _.each(events,function(event){
 
                 var eventDate = moment(event.event_start_date_time);
-                if (eventDate.isAfter(now)) {
-                    console.log('after now ',event.event_start_date_time);
-                }
-                else {
+                if (eventDate.isBefore(now) && eventDate.isAfter(twitterSearchLimit)) {
 
-                    if (event.twitterScore && event.twitterScore > 50) {  // TODO redo while testing
+                    if (event.twitterScore) {
                         console.log('already loaded',event.event_id,event.twitterScore);
                     }
                     else {
                         console.log('not yet loaded',event.event_id);
-                        if (event.pointsBasedRating == 'A' &&  eventIdTwitterQueue.length < 10) {  // TODO limit while testing
-                            //eventIdTwitterQueue.push(event.event_id);
+                        if (eventIdTwitterQueue.length < 20) {  // TODO limit while testing
                             fetchTwitterDetail(event.event_id);
                         }
                     }
                 }
             });
 
-            //queuedFetchEventTwitterDetail();
-            processTwitterQueue();
+            setTimeout(function(){processTwitterQueue()}, 2000);
 
             res.send('done')
         });

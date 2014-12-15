@@ -190,9 +190,11 @@
                 <span ng-click="toggleShowUpcoming()" class="textButton" ng-show="showUpcoming == true">Hide upcoming</span>
                 <span ng-click="showBest()" class="textButton" ng-show="showingBest == false">Best by day</span>
                 <span ng-click="showBestEver()" class="textButton" ng-show="showingBest == false">Best so far</span>
+                <span ng-click="showWithChatter()" class="textButton" ng-show="currentChatter == 10000">High Chatter</span>
+                <span ng-click="showAllChatter()" class="textButton" ng-hide="currentChatter == 10000">All Games</span>
                 <span ng-click="showAll()" class="textButton" ng-show="showingBest == true">All Games</span>
                 <!--<select ng-model="currentChatter" style="margin-left:9px" >-->
-                    <!--<option value="1000"> Chatter </option>-->
+                    <!--<option value="500"> Chatter </option>-->
                     <!--<option value="1"> Lots </option>-->
                 <!--</select>-->
             </div>
@@ -233,9 +235,12 @@
                         <span ng-click="setCurrentTeam(event.away_team_id)">{{teamsById[event.away_team_id].full_name}}</span>
                         <img ng-src="img/logos/{{teamsById[event.away_team_id].abbreviation}}.gif" alt="" style="max-height: 40px"/>
                     </div>
+                    <div class="summary" title="{{event.twitterScore}} mentions in Twitter" style="float:right" ng-if="event.twitterScore">
+                        <img src="img/twitter2.png" alt="Twitter Mentions" title="Twitter Mentions" style="width: 30px"/>
+                        {{event.twitterScore}}
+                    </div>
                     <div class="summary" title="Exact Rating: {{event.pointsBasedScore}}">
-                        Rating {{event.pointsBasedRating}} {{event.event_id}}
-                        <span ng-if="event.twitterScore"><br/>Chatter {{event.twitterScore}}</span>
+                        Rating {{event.pointsBasedRating}}
                     </div>
                     <div class="note" ng-if="event.finalScore" style="float: right">
                         <span ng-click="event.showScore = true" ng-hide="event.showScore == true">Game Score</span>

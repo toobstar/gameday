@@ -97,7 +97,7 @@ app.controller('mainController', ['$scope','$http','Teams','$window', function($
 		$scope.upcomingCount = 6;
         $scope.currentTeam = null;
         $scope.currentRating = null;
-        $scope.currentChatter = 1000;
+        $scope.currentChatter = 10000;
         $scope.onlyWithOz = false;
         $scope.showUpcoming = false;
         $scope.currentRating = '';
@@ -213,13 +213,13 @@ app.controller('mainController', ['$scope','$http','Teams','$window', function($
             Teams.getOpinions()
                 .success(function(data) {
                     $scope.opinions = data;
-                    console.log("opinions",$scope.opinions);
+                    //console.log("opinions",$scope.opinions);
 
                     var opinionsByEventId = {};
 
                     // group by event
                     $.each($scope.opinions,function(i,o){
-                        console.log("opinion",o);
+                        //console.log("opinion",o);
                         if (!opinionsByEventId[o.event_id]) {
                             opinionsByEventId[o.event_id] = [];
                         }
@@ -233,7 +233,7 @@ app.controller('mainController', ['$scope','$http','Teams','$window', function($
 
                     // aggregate score & set on local event model
                     $.each(opinionsByEventId,function(eventId,opinionArray){
-                        console.log("opinions for event",opinionArray);
+                        //console.log("opinions for event",opinionArray);
                         var likeCount = 0;
                         var dislikeCount = 0;
                         var userVoted = false;
@@ -332,10 +332,10 @@ app.controller('mainController', ['$scope','$http','Teams','$window', function($
         }
 
         $scope.matchTeamByChatter = function(event){
-            if ($scope.currentChatter == 1000)
+            if ($scope.currentChatter == 10000)
                 return true;
 
-            if (event.twitterScore && event.twitterScore > $scope.currentChatter)
+            if (event.twitterScore && parseInt(event.twitterScore) > $scope.currentChatter)
                 return true;
 
             return false;
@@ -378,6 +378,19 @@ app.controller('mainController', ['$scope','$http','Teams','$window', function($
             $scope.events = $scope.bestGameEver;
             $scope.showingBest = true;
         }
+
+        $scope.showWithChatter = function() {
+            console.log('scope.showWithChatter');
+            $scope.currentChatter = 500;
+            $scope.$emit('tilesUpdated');
+        }
+
+        $scope.showAllChatter = function() {
+            console.log('scope.showWithChatter');
+            $scope.currentChatter = 10000;
+            $scope.$emit('tilesUpdated');
+        }
+
 
 
         $scope.$watch(function() { return $scope.currentRating }, function(value) {
