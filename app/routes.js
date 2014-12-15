@@ -305,7 +305,7 @@ var processTwitterQueue = function() {
 };
 
 function askTwitter(eventId, searchParams, iterationCount) {
-    console.log('');
+    console.log(' ');
     console.log('');
     console.log('doing twitter search for query: ',searchParams.q, iterationCount);
     if (iterationCount > 10) {
