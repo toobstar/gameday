@@ -1,7 +1,7 @@
 var mongoose = require('mongoose');
 
 module.exports = mongoose.model('Team', {
-	team_id : {type : String, default: ''},
+	team_id : {type : String, default: '', index: true},
 	abbreviation : {type : String, default: ''},
 	active : {type : String, default: ''},
 	first_name : {type : String, default: ''},
