@@ -286,6 +286,8 @@ function fetchTwitterDetail(eventId) {
         });
 }
 
+var queueUnchangedCount = 0;
+var prevQueueLength = 0;
 var eventIdTwitterQueue = [];
 var processTwitterQueue = function() {
   if (eventIdTwitterQueue.length > 0) {
@@ -299,7 +301,21 @@ var processTwitterQueue = function() {
     }
 
       // delay: twitter rate limit is 450/15 min = (15*60)/450 <= 1 every 2 seconds
-    console.log('processTwitterQueue waiting 3s - queued: ' + eventIdTwitterQueue.length);
+    console.log('processTwitterQueue waiting 3s - queued: ' + eventIdTwitterQueue.length, queueUnchangedCount);
+
+    // simple queue manager
+    if (prevQueueLength == eventIdTwitterQueue.length && eventIdTwitterQueue.length > 0) {
+        queueUnchangedCount++
+    }
+    else {
+        queueUnchangedCount = 0;
+    }
+    if (queueUnchangedCount > 10) {
+        console.log('reseting queue');
+        queueUnchangedCount = 0;
+        apiCallInProgress = false;
+    }
+    prevQueueLength = eventIdTwitterQueue.length;
     setTimeout(function(){processTwitterQueue()}, 3000);
   }
 };
