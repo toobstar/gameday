@@ -736,6 +736,20 @@ module.exports = function (app) {
 
     // api ---------------------------------------------------------------------
 
+    app.get('/api/tweets/:eventId', function (req, res) {
+
+        Tweet.find({event_id: req.params.eventId}, function (err, tweets) {
+            console.log('Tweet.find',err, req.params.eventId);
+
+            if (err)
+                res.send(err);
+
+            res.json(tweets);
+        });
+
+
+    });
+
     app.get('/api/twitterSearch/:securityCode', function (req, res) {
 
         if (SECURITY_CODE !== req.params.securityCode) {

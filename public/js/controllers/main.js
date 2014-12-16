@@ -391,6 +391,15 @@ app.controller('mainController', ['$scope','$http','Teams','$window', function($
             $scope.$emit('tilesUpdated');
         }
 
+        $scope.showTweets = function(event) {
+            console.log('scope.event',event.event_id);
+            Teams.tweets(event.event_id)
+                .success(function(data) {
+                    $scope.tweets = data;
+                });
+        }
+
+
 
 
         $scope.$watch(function() { return $scope.currentRating }, function(value) {

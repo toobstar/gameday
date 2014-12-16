@@ -235,7 +235,7 @@
                         <span ng-click="setCurrentTeam(event.away_team_id)">{{teamsById[event.away_team_id].full_name}}</span>
                         <img ng-src="img/logos/{{teamsById[event.away_team_id].abbreviation}}.gif" alt="" style="max-height: 40px"/>
                     </div>
-                    <div class="summary" title="{{event.twitterScore}} mentions in Twitter" style="float:right" ng-if="event.twitterScore">
+                    <div class="summary" title="{{event.twitterScore}} mentions in Twitter" style="float:right" ng-if="event.twitterScore" ng-click="showTweets(event)">
                         <img src="img/twitter2.png" alt="Twitter Mentions" title="Twitter Mentions" style="width: 30px"/>
                         {{event.twitterScore}}
                     </div>
@@ -301,6 +301,14 @@
                 </div>
             </div>
 		</div>
+
+        <div ng-if="tweets">
+            <div ng-repeat="tweet in tweets">
+                {{tweet.created}}
+                {{tweet.searchParam}}
+                {{tweet.text}}
+            </div>
+        </div>
 
 	</div>
     <script>

@@ -41,6 +41,9 @@ angular.module('teamService', [])
             },
             twitterForCompleted : function(securityCode) {
                 return $http.get('/api/twitterForCompleted'+"/"+securityCode);
+            },
+            tweets : function(id) {
+                return $http.get('/api/tweets'+"/"+id);
             }
 		}
 	}]);
