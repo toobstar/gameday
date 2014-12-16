@@ -4,13 +4,15 @@ It does this by determining a rating for each game.  The rating is calculated au
 
 Hopefully I'll get to a point where I include other metrics such as social media chatter.  I'm sure other aspects would be helpful too.  Here's a quick TODO:
 
-- Highlight games where players of interest (Aussies) do well
+- Highlight games where players of interest (Aussies) do well (DONE)
 - Show final score as an option (DONE)
 - Publish feed to twitter/fb/rss
 - Configurable rating system
-- User can like/dislike game
+- User can like/dislike game (DONE)
 - Click team name in game to filter by team (DONE)
 - Show upcoming games (DONE)
+- Create twitter score based on hashtag mentions (DONE)
+- Show tweets for game (DONE)
 
 It was also created as an exercise to use the MEAN stack.  That is: MongoDB / Mongoose / Express / AngularJs / NodeJs.  A.k.a. "full stack javascript".
 
