@@ -693,6 +693,19 @@ function calcScores(event) {
         }
     }
 
+    if (!event.twitterScore) {
+        var now = moment().subtract(10, 'hours');
+        var twitterSearchLimit = moment().subtract(8, 'days');
+        var eventDate = moment(event.event_start_date_time);
+        if (eventDate.isBefore(now) && eventDate.isAfter(twitterSearchLimit)) {
+            console.log('not yet loaded',event.event_id);
+            if (eventIdTwitterQueue.length < 20) {  // TODO limit while testing
+                fetchTwitterDetail(event.event_id);
+            }
+        }
+    }
+
+
     event.save(function (err, event, numberAffected) {
         if (err) {
             console.log('0-error saving ',err);
@@ -882,7 +895,9 @@ module.exports = function (app) {
                 }
                 //console.log('boxScoreForCompleted ',event.event_id, event.event_start_date_time);
             });
+
             queuedFetchEventDetail();
+            setTimeout(function(){processTwitterQueue()}, 10000);
 
             res.send('done')
         });
