@@ -341,7 +341,8 @@ function askTwitter(eventId, searchParams, iterationCount) {
     console.log(' ');
     console.log('');
     console.log('doing twitter search for query: ',searchParams.q, iterationCount);
-    if (iterationCount > 10) {
+    if (iterationCount > 15) {
+        apiCallInProgress = false;
         console.log('XXX reached max iteration count: ',searchParams.q, iterationCount);
         return;
     }
