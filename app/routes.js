@@ -107,6 +107,8 @@ var processEventDetailResults = function(content, eventId) {
 }
 
 var eventIdQueue = [];
+var apiPrevQueueLength = 0;
+var apiQueueUnchangedCount = 0;
 var queuedFetchEventDetail = function() {
     console.log('queuedFetchEventDetail apiCallInProgress ',apiCallInProgress,eventIdQueue);
     if (eventIdQueue.length > 0) {
@@ -116,6 +118,21 @@ var queuedFetchEventDetail = function() {
             console.log('queuedFetchEventDetail scheduled ',eventId);
             fetchEventDetail(eventId);
         }
+
+
+        // simple queue manager
+        if (apiPrevQueueLength == eventIdQueue.length && eventIdQueue.length > 0) {
+            apiQueueUnchangedCount++
+        }
+        else {
+            apiQueueUnchangedCount = 0;
+        }
+        if (apiQueueUnchangedCount > 10) {
+            console.log('resetting queue');
+            apiQueueUnchangedCount = 0;
+            apiCallInProgress = false;
+        }
+        apiPrevQueueLength = eventIdQueue.length;
 
         console.log('queuedFetchEventDetail waiting 11s - queued: ' + eventIdQueue.length, apiCallInProgress);
         setTimeout(function(){queuedFetchEventDetail()}, apiDelayBetweenCalls);
