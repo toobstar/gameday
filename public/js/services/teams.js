@@ -42,6 +42,9 @@ angular.module('teamService', [])
             twitterForCompleted : function(securityCode) {
                 return $http.get('/api/twitterForCompleted'+"/"+securityCode);
             },
+            deleteTwitterMsgs : function(securityCode) {
+                return $http.get('/api/deleteTwitterMsgs'+"/"+securityCode);
+            },
             tweets : function(id) {
                 return $http.get('/api/tweets'+"/"+id);
             }

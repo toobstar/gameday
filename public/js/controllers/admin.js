@@ -83,5 +83,14 @@ app.controller('adminController', ['$scope','$http','Teams', '$location', functi
                 });
         };
 
+        $scope.deleteTwitterMsgs = function() {
+            $scope.loading = true;
+            console.log('deleteTwitterMsgs ');
+            Teams.deleteTwitterMsgs($scope.securityCode)
+                .success(function(data) {
+                    $scope.loading = false;
+                });
+        };
+
 
 	}]);

@@ -764,6 +764,23 @@ module.exports = function (app) {
         res.send('done')
     });
 
+    app.get('/api/deleteTwitterMsgs/:securityCode', function (req, res) {
+
+        if (SECURITY_CODE !== req.params.securityCode) {
+            console.log("invalid securityCode ", req.params.securityCode);
+            res.send('invalid');
+            return;
+        }
+
+        Tweet.remove({}, function (err) {
+            console.log('clearAll Tweets ');
+            if (err)
+                res.send(err);
+        });
+
+        res.send('done')
+    });
+
 
     app.get('/api/twitterForCompleted/:securityCode', function (req, res) {
 
