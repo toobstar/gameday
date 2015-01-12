@@ -13,6 +13,7 @@
     "moment-timezone" : "~0.2.5",
     "sprintf"         : "~0.1.4",
     "twit"            : "~1.1.18",
-    "underscore"      : "1.7.0"
+    "underscore"      : "1.7.0",
+    "functionqueue"      : "0.0.8"
   }
 }
