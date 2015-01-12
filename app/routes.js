@@ -371,19 +371,20 @@ function askTwitter(eventId, searchParams, iterationCount) {
                           smallestId = tweet.id;
                       }
 
-                      Tweet.findOneAndUpdate(
-                          {twitterId: tweet.id},
-                          {event_id: eventId,
-                              searchParam: searchParams.q,
-                              text: tweet.text,
-                              created: tweet.created_at,
-                              twitterId: tweet.id
-                          },
-                          {upsert: true}, function(err, data){
-                              if (err) {
-                                console.log('Tweet.findOneAndUpdate result', err, data, tweet);
-                              }
-                          });
+                      // Dont save tweets to local DB as takes a lot of space and currently not used for anything
+//                      Tweet.findOneAndUpdate(
+//                          {twitterId: tweet.id},
+//                          {event_id: eventId,
+//                              searchParam: searchParams.q,
+//                              text: tweet.text,
+//                              created: tweet.created_at,
+//                              twitterId: tweet.id
+//                          },
+//                          {upsert: true}, function(err, data){
+//                              if (err) {
+//                                console.log('Tweet.findOneAndUpdate result', err, data, tweet);
+//                              }
+//                          });
 
                   });
 
