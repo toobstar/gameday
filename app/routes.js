@@ -823,7 +823,7 @@ module.exports = function (app) {
 
                 // could filter out old events here??
 
-                if (eventFinishDateETzone.isAfter(nowETzone) || eventFinishDateETzone.before(seasonStart)) {
+                if (eventFinishDateETzone.isAfter(nowETzone) || eventFinishDateETzone.isBefore(seasonStart)) {
                     console.log('after now ',eventFinishDateETzone.format("dddd, MMMM Do YYYY, h:mm:ss a"));
                     console.log('or before season start ',seasonStart.format("dddd, MMMM Do YYYY, h:mm:ss a"));
                 }
