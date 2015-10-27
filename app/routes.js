@@ -819,9 +819,13 @@ module.exports = function (app) {
                 var eventStartDateETzone = moment(event.event_start_date_time).zone("-04:00");
                 var eventFinishDateETzone = eventStartDateETzone.clone().add(2, 'hours');
                 var nowETzone = moment().zone("-04:00");
+                var seasonStart = moment('2015-10-25');
 
-                if (eventFinishDateETzone.isAfter(nowETzone)) {
+                // could filter out old events here??
+
+                if (eventFinishDateETzone.isAfter(nowETzone) || eventFinishDateETzone.before(seasonStart)) {
                     console.log('after now ',eventFinishDateETzone.format("dddd, MMMM Do YYYY, h:mm:ss a"));
+                    console.log('or before season start ',seasonStart.format("dddd, MMMM Do YYYY, h:mm:ss a"));
                 }
                 else {
 
