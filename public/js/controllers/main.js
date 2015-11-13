@@ -90,7 +90,7 @@ app.directive('masonryItemDir',
     }
 );
 
-app.controller('mainController', ['$scope','$http','Teams','$window', function($scope, $http, Teams, $window) {
+app.controller('mainController', ['$scope','$http','Teams','$window', function($scope, $http, Teams, $window, $routeParams, $location) {
 
 		$scope.loading = true;
 		$scope.eventCount = 6;
@@ -107,6 +107,9 @@ app.controller('mainController', ['$scope','$http','Teams','$window', function($
         $scope.completedEvents = [];
         $scope.showingBest = false;
         $scope.events = [];
+
+        console.log("XXX mainController $routeParams", $routeParams);
+        console.log("XXX mainController $location", $location);
 
 		// REST API ====
 		// when landing on the page get all teams
@@ -398,9 +401,6 @@ app.controller('mainController', ['$scope','$http','Teams','$window', function($
                     $scope.tweets = data;
                 });
         }
-
-
-
 
         $scope.$watch(function() { return $scope.currentRating }, function(value) {
             if(!value) return;
