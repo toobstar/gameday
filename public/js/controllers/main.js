@@ -90,7 +90,7 @@ app.directive('masonryItemDir',
     }
 );
 
-app.controller('mainController', ['$scope','$http','Teams','$window', '$routeParams', '$location', function($scope, $http, Teams, $window, $routeParams, $location) {
+app.controller('mainController', ['$scope','$http','Teams','$window', function($scope, $http, Teams, $window) {
 
 		$scope.loading = true;
 		$scope.eventCount = 6;
