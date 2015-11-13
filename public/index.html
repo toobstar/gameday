@@ -248,18 +248,18 @@
                             {{event.finalScore}}
                         </span>
                     </div>
-                    <div class="note" >
-                        <div ng-class="{userVoted:event.userVoted == true}" style="width:65px;padding-bottom:5px;">
-                            <span ng-click="likeEvent(event)" >
-                                <img src="img/up.png" alt="like" title="like" style="width: 20px"/>
-                                <span ng-show="event.dislikeCount > 0 || event.likeCount > 0">{{event.likeCount}}</span>
-                            </span>
-                            <span ng-click="dislikeEvent(event)">
-                                <img src="img/down.png" alt="Dislike" title="Dislike" style="width: 20px"/>
-                                <span ng-show="event.dislikeCount > 0 || event.likeCount > 0">{{event.dislikeCount}}</span>
-                            </span>
-                        </div>
-                    </div>
+                    <!--<div class="note" >-->
+                        <!--<div ng-class="{userVoted:event.userVoted == true}" style="width:65px;padding-bottom:5px;">-->
+                            <!--<span ng-click="likeEvent(event)" >-->
+                                <!--<img src="img/up.png" alt="like" title="like" style="width: 20px"/>-->
+                                <!--<span ng-show="event.dislikeCount > 0 || event.likeCount > 0">{{event.likeCount}}</span>-->
+                            <!--</span>-->
+                            <!--<span ng-click="dislikeEvent(event)">-->
+                                <!--<img src="img/down.png" alt="Dislike" title="Dislike" style="width: 20px"/>-->
+                                <!--<span ng-show="event.dislikeCount > 0 || event.likeCount > 0">{{event.dislikeCount}}</span>-->
+                            <!--</span>-->
+                        <!--</div>-->
+                    <!--</div>-->
                     <div class="type" style="float: right">
                         {{event.event_start_date_time | date:'mediumDate'}}
                     </div>
