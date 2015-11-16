@@ -123,7 +123,7 @@ app.controller('mainController', ['$scope','$http','Teams','$window','$location'
         $scope.events = [];
 
         $scope.selectedEventId = '';
-        var currentGameUrl = $location.search()['game'];
+        var currentGameUrl = $location.hash();
         console.log("initial currentGameUrl",currentGameUrl);
         if (currentGameUrl) {
             $scope.selectedEventId = currentGameUrl;
@@ -224,12 +224,12 @@ app.controller('mainController', ['$scope','$http','Teams','$window','$location'
 
         $scope.gotoGame = function(eId, e) {
             console.log("gotoGame",eId, e);
-            var currentGameUrl = $location.search()['game'];
+            var currentGameUrl = $location.hash();
             console.log("currentGameUrl",currentGameUrl);
             if (currentGameUrl) {
                 $scope.selectedEventId = currentGameUrl;
             }
-            $location.path('/?game=' + eId);
+            $location.hash(eId);
 
             //http://www.bestgametowatch.com/#/%3Fgame=20151115-new-orleans-pelicans-at-new-york-knicks
             //http://www.bestgametowatch.com/#/%3Fgame=20151114-brooklyn-nets-at-golden-state-warriors
