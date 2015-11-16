@@ -89,7 +89,7 @@ app.config(
             $routeProvider.when('/', {
                 controller:'mainController'
             });
-            $routeProvider.when('/:eventId', {
+            $routeProvider.when('/event/:eventId', {
                 controller:'mainController'
             }).otherwise({redirectTo:'/'});
         }
@@ -248,7 +248,7 @@ app.controller('mainController', ['$scope','$http','Teams','$window','$location'
                 $scope.$emit('tilesUpdated');
             }
 //            $location.hash(eId);
-            $location.url('/'+eId);
+            $location.path('/event/'+eId);
 
             //http://www.bestgametowatch.com/#/%3Fgame=20151115-new-orleans-pelicans-at-new-york-knicks
             //http://www.bestgametowatch.com/#/%3Fgame=20151114-brooklyn-nets-at-golden-state-warriors
