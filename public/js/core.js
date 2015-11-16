@@ -1,1 +1,1 @@
-angular.module('gameDay', ['teamController', 'teamService']);
+angular.module('gameDay', ['mainController', 'teamService']);

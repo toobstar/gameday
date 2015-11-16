@@ -1,4 +1,4 @@
-var app = angular.module('teamController', ['ngRoute']);
+var app = angular.module('mainController', ['ngRoute']);
 app.controller('adminController', ['$scope','$http','Teams', '$location', function($scope, $http, Teams) {
 
         $scope.securityCode = "";
