@@ -227,7 +227,7 @@
                             transitionDuration: '0.4s'
                         }"
                     >
-                <div class="eve" ng-click="gotoGame(event.id, e)" ng-repeat="event in events | filter:matchTeam | orderBy:'event_start_date_time':true | limitTo:eventCount" custom-directive masonry-item-dir>
+                <div class="eve" ng-repeat="event in events | filter:matchTeam | orderBy:'event_start_date_time':true | limitTo:eventCount" custom-directive masonry-item-dir>
                     <div class="title">
                         <span ng-click="setCurrentTeam(event.home_team_id)">{{teamsById[event.home_team_id].full_name}}</span>
                         <img ng-src="img/logos/{{teamsById[event.home_team_id].abbreviation}}.gif" alt="" style="max-height: 40px"/>
@@ -248,7 +248,8 @@
                             {{event.finalScore}}
                         </span>
                     </div>
-                    <!--<div class="note" >-->
+                    <div class="note" ng-click="gotoGame(event.id, event)">
+                        Share
                         <!--<div ng-class="{userVoted:event.userVoted == true}" style="width:65px;padding-bottom:5px;">-->
                             <!--<span ng-click="likeEvent(event)" >-->
                                 <!--<img src="img/up.png" alt="like" title="like" style="width: 20px"/>-->
@@ -259,7 +260,7 @@
                                 <!--<span ng-show="event.dislikeCount > 0 || event.likeCount > 0">{{event.dislikeCount}}</span>-->
                             <!--</span>-->
                         <!--</div>-->
-                    <!--</div>-->
+                    </div>
                     <div class="type" style="float: right">
                         {{event.event_start_date_time | date:'mediumDate'}}
                     </div>
