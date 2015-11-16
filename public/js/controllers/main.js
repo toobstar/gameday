@@ -122,8 +122,12 @@ app.controller('mainController', ['$scope','$http','Teams','$window','$location'
         $scope.showingBest = false;
         $scope.events = [];
 
-        console.log("XXX mainController $location", $location, $location.search());
         $scope.selectedEventId = '';
+        var currentGameUrl = $location.search()['game'];
+        console.log("initial currentGameUrl",currentGameUrl);
+        if (currentGameUrl) {
+            $scope.selectedEventId = currentGameUrl;
+        }
 
 		// REST API ====
 		// when landing on the page get all teams
@@ -401,6 +405,7 @@ app.controller('mainController', ['$scope','$http','Teams','$window','$location'
         $scope.showAll = function() {
             console.log('scope.showAll');
             $scope.events = $scope.completedEvents;
+            $scope.selectedEventId = '';
             $scope.showingBest = false;
         }
 

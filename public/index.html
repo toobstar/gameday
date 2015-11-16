@@ -192,7 +192,7 @@
                 <span ng-click="showBestEver()" class="textButton" ng-show="showingBest == false">Best so far</span>
                 <span ng-click="showWithChatter()" class="textButton" ng-show="currentChatter == 10000">High Chatter</span>
                 <span ng-click="showAllChatter()" class="textButton" ng-hide="currentChatter == 10000">All Games</span>
-                <span ng-click="showAll()" class="textButton" ng-show="showingBest == true">All Games</span>
+                <span ng-click="showAll()" class="textButton" ng-show="showingBest == true || (selectedEventId && selectedEventId!='')">All Games</span>
                 <!--<select ng-model="currentChatter" style="margin-left:9px" >-->
                     <!--<option value="500"> Chatter </option>-->
                     <!--<option value="1"> Lots </option>-->
