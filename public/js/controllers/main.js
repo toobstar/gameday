@@ -67,6 +67,20 @@ app.directive('masonryWallDir', function(){
     };
 });
 
+//app.config(
+//    function($routeProvider) {
+//        $routeProvider.
+//            when('/', {templateUrl:'/home'}).
+//            when('/users/:user_id',
+//            {
+//                controller:UserView,
+//                templateUrl: function(params){ return '/users/view/' + params.user_id; }
+//            }
+//        ).
+//            otherwise({redirectTo:'/'});
+//    }
+//);
+
 app.directive('masonryItemDir',
     function(){
         return {
@@ -90,7 +104,7 @@ app.directive('masonryItemDir',
     }
 );
 
-app.controller('mainController', ['$scope','$http','Teams','$window', function($scope, $http, Teams, $window) {
+app.controller('mainController', ['$scope','$http','Teams','$window','$location', function($scope, $http, Teams, $window, $location) {
 
 		$scope.loading = true;
 		$scope.eventCount = 6;
