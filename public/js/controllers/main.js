@@ -80,15 +80,12 @@ app.directive('masonryWallDir', function(){
 //            otherwise({redirectTo:'/'});
 //    }
 //);
-
 app.config(
     ['$locationProvider',
         function ($locationProvider) {
-
             //commenting out this line (switching to hashbang mode) breaks the app
             //-- unless # is added to the templates
             $locationProvider.html5Mode(true);
-
 //            $routeProvider.when('/', {
 //                template: 'this is home. go to <a href="/about"/>about</a>'
 //            });
@@ -245,6 +242,7 @@ app.controller('mainController', ['$scope','$http','Teams','$window','$location'
             console.log("currentGameUrl",currentGameUrl);
             if (currentGameUrl) {
                 $scope.selectedEventId = currentGameUrl;
+                $scope.$emit('tilesUpdated');
             }
             $location.hash(eId);
 
