@@ -123,6 +123,7 @@ app.controller('mainController', ['$scope','$http','Teams','$window','$location'
         $scope.events = [];
 
         console.log("XXX mainController $location", $location, $location.search());
+        $scope.selectedEventId = '';
 
 		// REST API ====
 		// when landing on the page get all teams
@@ -214,6 +215,15 @@ app.controller('mainController', ['$scope','$http','Teams','$window','$location'
                 });
 
             });
+
+    //www.bestgametowatch.com/#/?game=NYK
+
+        $scope.gotoGame = function(eId, e) {
+            console.log("gotoGame",eId, e);
+            var currentGameUrl = $location.search()['game'];
+            console.log("currentGameUrl",currentGameUrl);
+            $location.url('www.bestgametowatch.com/#/?game=' + eId);
+        }
 
         $scope.isPlural = function(number) {
             if (number > 1) {
