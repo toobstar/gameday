@@ -249,7 +249,7 @@ app.controller('mainController', ['$scope','$http','Teams','$window','$location'
                 $scope.$emit('tilesUpdated');
             }
 //            $location.hash(eId);
-            var path = '/event/'+eId;
+            var path = '/#/event/'+eId;
             console.log("gotoGame path",path);
 
             if (!$.isEmptyObject($location.search())) {
