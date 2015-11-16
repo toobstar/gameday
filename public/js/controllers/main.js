@@ -222,7 +222,13 @@ app.controller('mainController', ['$scope','$http','Teams','$window','$location'
             console.log("gotoGame",eId, e);
             var currentGameUrl = $location.search()['game'];
             console.log("currentGameUrl",currentGameUrl);
-            $location.path('/?game=' + eId);
+            if (currentGameUrl) {
+                $scope.selectedEventId = currentGameUrl;
+            }
+            $location.path('/game=' + eId);
+
+            //http://www.bestgametowatch.com/#/%3Fgame=20151115-new-orleans-pelicans-at-new-york-knicks
+            //http://www.bestgametowatch.com/#/%3Fgame=20151114-brooklyn-nets-at-golden-state-warriors
         }
 
         $scope.isPlural = function(number) {
@@ -335,6 +341,11 @@ app.controller('mainController', ['$scope','$http','Teams','$window','$location'
             return res1 && res2 && res3 && res4;
         }
         $scope.matchTeamById = function(event){
+
+            if ($scope.selectedEventId && $scope.selectedEventId != '') {
+                return event.event_id == $scope.selectedEventId;
+            }
+
             if (!$scope.currentTeam || !$scope.currentTeam.team_id)
                 return true;
 
