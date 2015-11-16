@@ -118,7 +118,8 @@ app.directive('masonryItemDir',
     }
 );
 
-app.controller('mainController', ['$scope','$http','Teams','$window','$location','$routeParams', function($scope, $http, Teams, $window, $location, $routeParams) {
+//app.controller('mainController', ['$scope','$http','Teams','$window','$location','$routeParams', function($scope, $http, Teams, $window, $location, $routeParams) {
+app.controller('mainController', ['$scope','$http','Teams','$window','$location', function($scope, $http, Teams, $window, $location) {
 
 		$scope.loading = true;
 		$scope.eventCount = 6;
@@ -143,7 +144,7 @@ app.controller('mainController', ['$scope','$http','Teams','$window','$location'
             $scope.selectedEventId = currentGameUrl;
         }
 
-        console.log("initial $routeParams.eventId",$routeParams.eventId);
+//        console.log("initial $routeParams.eventId",$routeParams.eventId);
 
 
 		// REST API ====
