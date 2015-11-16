@@ -236,12 +236,10 @@ app.controller('mainController', ['$scope','$http','Teams','$window','$location'
 
     //www.bestgametowatch.com/#/?game=NYK
 
-        $scope.gotoGame = function(eId, e) {
-            console.log("gotoGame",eId, e);
-            var currentGameUrl = $location.hash();
-            console.log("currentGameUrl",currentGameUrl);
-            if (currentGameUrl) {
-                $scope.selectedEventId = currentGameUrl;
+        $scope.gotoGame = function(eId) {
+            console.log("gotoGame",eId);
+            if (eId) {
+                $scope.selectedEventId = eId;
                 $scope.$emit('tilesUpdated');
             }
             $location.hash(eId);
