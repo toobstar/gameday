@@ -1,4 +1,4 @@
-var app = angular.module( 'mainController', [] );
+
 
 // masonry/angular solution from:   http://plnkr.co/edit/ZuSrSh?p=preview
 app.directive('masonryWallDir', function(){
