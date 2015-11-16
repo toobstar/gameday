@@ -82,16 +82,16 @@ app.directive('masonryWallDir', function(){
 //);
 app.config(
     ['$locationProvider',
-        function ($locationProvider) {
+        function ($locationProvider, $routeProvider) {
             //commenting out this line (switching to hashbang mode) breaks the app
             //-- unless # is added to the templates
             $locationProvider.html5Mode(true);
-//            $routeProvider.when('/', {
-//                template: 'this is home. go to <a href="/about"/>about</a>'
-//            });
-//            $routeProvider.when('/about', {
-//                template: 'this is about. go to <a href="/"/>home</a'
-//            });
+            $routeProvider.when('/', {
+                controller:'mainController'
+            });
+            $routeProvider.when('/:eventId', {
+                controller:'mainController'
+            }).otherwise({redirectTo:'/'});
         }
     ]);
 
@@ -118,7 +118,7 @@ app.directive('masonryItemDir',
     }
 );
 
-app.controller('mainController', ['$scope','$http','Teams','$window','$location', function($scope, $http, Teams, $window, $location) {
+app.controller('mainController', ['$scope','$http','Teams','$window','$location','$routeParams', function($scope, $http, Teams, $window, $location, $routeParams) {
 
 		$scope.loading = true;
 		$scope.eventCount = 6;
@@ -142,6 +142,9 @@ app.controller('mainController', ['$scope','$http','Teams','$window','$location'
         if (currentGameUrl) {
             $scope.selectedEventId = currentGameUrl;
         }
+
+        console.log("initial $routeParams.eventId",$routeParams.eventId);
+
 
 		// REST API ====
 		// when landing on the page get all teams
