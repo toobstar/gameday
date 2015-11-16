@@ -406,6 +406,7 @@ app.controller('mainController', ['$scope','$http','Teams','$window','$location'
             console.log('scope.showAll');
             $scope.events = $scope.completedEvents;
             $scope.selectedEventId = '';
+            $location.hash('');
             $scope.showingBest = false;
         }
 
