@@ -243,13 +243,20 @@ app.controller('mainController', ['$scope','$http','Teams','$window','$location'
     //www.bestgametowatch.com/#/?game=NYK
 
         $scope.gotoGame = function(eId) {
-            console.log("gotoGame",eId);
+            console.log("gotoGame id",eId);
             if (eId) {
                 $scope.selectedEventId = eId;
                 $scope.$emit('tilesUpdated');
             }
 //            $location.hash(eId);
-            $location.path('/event/'+eId);
+            var path = '/event/'+eId;
+            console.log("gotoGame path",path);
+
+            if (!$.isEmptyObject($location.search())) {
+                $location.path(path).search('');
+            } else {
+                $location.path(path);
+            }
 
             //http://www.bestgametowatch.com/#/%3Fgame=20151115-new-orleans-pelicans-at-new-york-knicks
             //http://www.bestgametowatch.com/#/%3Fgame=20151114-brooklyn-nets-at-golden-state-warriors
