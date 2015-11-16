@@ -222,7 +222,7 @@ app.controller('mainController', ['$scope','$http','Teams','$window','$location'
             console.log("gotoGame",eId, e);
             var currentGameUrl = $location.search()['game'];
             console.log("currentGameUrl",currentGameUrl);
-            $location.url('www.bestgametowatch.com/#/?game=' + eId);
+            $location.path('/?game=' + eId);
         }
 
         $scope.isPlural = function(number) {
