@@ -81,7 +81,7 @@ app.directive('masonryWallDir', function(){
 //    }
 //);
 app.config(
-    ['$locationProvider',
+    ['$locationProvider','$routeProvider',
         function ($locationProvider, $routeProvider) {
             //commenting out this line (switching to hashbang mode) breaks the app
             //-- unless # is added to the templates
