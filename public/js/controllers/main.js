@@ -144,6 +144,7 @@ app.controller('mainController', ['$scope','$http','Teams','$window','$location'
             $scope.selectedEventId = currentGameUrl;
         }
 
+        console.log("initial $routeParams",$routeParams);
         console.log("initial $routeParams.eventId",$routeParams.eventId);
 
 
@@ -246,7 +247,8 @@ app.controller('mainController', ['$scope','$http','Teams','$window','$location'
                 $scope.selectedEventId = eId;
                 $scope.$emit('tilesUpdated');
             }
-            $location.hash(eId);
+//            $location.hash(eId);
+            $location.url('/'+eId);
 
             //http://www.bestgametowatch.com/#/%3Fgame=20151115-new-orleans-pelicans-at-new-york-knicks
             //http://www.bestgametowatch.com/#/%3Fgame=20151114-brooklyn-nets-at-golden-state-warriors
