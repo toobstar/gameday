@@ -108,7 +108,7 @@ app.controller('mainController', ['$scope','$http','Teams','$window', function($
         $scope.showingBest = false;
         $scope.events = [];
 
-        console.log("XXX mainController $routeParams", $routeParams);
+//        console.log("XXX mainController $routeParams", $routeParams);
         console.log("XXX mainController $location", $location);
 
 		// REST API ====
