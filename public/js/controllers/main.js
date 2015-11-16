@@ -91,7 +91,8 @@ app.config(
             });
             $routeProvider.when('/event/:eventId', {
                 controller:'mainController'
-            }).otherwise({redirectTo:'/'});
+            });
+//                .otherwise({redirectTo:'/'});
         }
     ]);
 
