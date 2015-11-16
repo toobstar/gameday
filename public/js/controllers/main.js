@@ -122,8 +122,7 @@ app.controller('mainController', ['$scope','$http','Teams','$window','$location'
         $scope.showingBest = false;
         $scope.events = [];
 
-//        console.log("XXX mainController $routeParams", $routeParams);
-        console.log("XXX mainController $location", $location);
+        console.log("XXX mainController $location", $location, $location.search());
 
 		// REST API ====
 		// when landing on the page get all teams
