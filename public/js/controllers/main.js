@@ -225,7 +225,7 @@ app.controller('mainController', ['$scope','$http','Teams','$window','$location'
             if (currentGameUrl) {
                 $scope.selectedEventId = currentGameUrl;
             }
-            $location.path('/game=' + eId);
+            $location.path('/?game=' + eId);
 
             //http://www.bestgametowatch.com/#/%3Fgame=20151115-new-orleans-pelicans-at-new-york-knicks
             //http://www.bestgametowatch.com/#/%3Fgame=20151114-brooklyn-nets-at-golden-state-warriors
