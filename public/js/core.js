@@ -6,10 +6,10 @@ angular.module( 'gameDay', ['mainController', 'teamService'] ).config(
             //-- unless # is added to the templates
             $locationProvider.html5Mode(true);
             $routeProvider.when('/', {
-                controller:'mainController'
+                controller:mainController
             });
             $routeProvider.when('/event/:eventId', {
-                controller:'mainController'
+                controller:mainController
             });
 //                .otherwise({redirectTo:'/'});
         }
