@@ -120,14 +120,14 @@ lookup['minnesota-timberwolves']='#TWolves, #Timberwolves';
 lookup['new-orleans-pelicans']='#pelicans';
 lookup['new-york-knicks']='#Knicks';
 lookup['oklahoma-city-thunder']='#okcthunder,#OklahomaCityThunder';
-lookup['orlando-magic']='#OrlandoMagic, #Magic';
+lookup['orlando-magic']='#OrlandoMagic, #Magic, #puremagic';
 lookup['philadelphia-76ers']='#76ers';
 lookup['phoenix-suns']='#Suns';
 lookup['portland-trail-blazers']='#TrailBlazers,#Blazers,#RipCity';
 lookup['sacramento-kings']='#NBAKings';
 lookup['san-antonio-spurs']='#GoSpursGo,#Spurs';
 lookup['toronto-raptors']='#Raptors';
-lookup['utah-jazz']='#UtahJazz';
+lookup['utah-jazz']='#UtahJazz, #jazznation';
 lookup['washington-wizards']='#Wizards';
 
 var lookup2 = {};
