@@ -14,8 +14,8 @@
 		html 					{ overflow-y:scroll; }
 		body 					{
             padding-top:50px;
-            /*background-image:   url('/img/clipsfloor.png');*/
-            /*background-repeat:  repeat;*/
+            background-image:   url('/img/clipsfloor.png');
+            background-repeat:  repeat;
         }
 
         .pageHeader {
@@ -174,9 +174,9 @@
 <body ng-controller="mainController">
 	<div class="container">
 
-		<!--<div class="jumbotron text-center pageHeader" onclick="setImgBg();">-->
-			<!--<h1 class="pageHeaderTxt">NBA game of the day<span class="label label-info"></span></h1>-->
-		<!--</div>-->
+		<div class="jumbotron text-center pageHeader" onclick="setImgBg();">
+			<h1 class="pageHeaderTxt">NBA game of the day<span class="label label-info"></span></h1>
+		</div>
 
 		<div class="row">
             <div style="margin-bottom: 10px;">
@@ -195,7 +195,7 @@
                 <span ng-click="showBestEver()" class="textButton" ng-show="showingBest == false">Best so far</span>
                 <span ng-click="showWithChatter()" class="textButton" ng-show="currentChatter == 10000">High Chatter</span>
                 <span ng-click="showAllChatter()" class="textButton" ng-hide="currentChatter == 10000">All Games</span>
-                <span ng-click="showAll()" class="textButton" ng-show="showingBest == true || (selectedEventId && selectedEventId!='')">All Games</span>
+                <span ng-click="showAll(true)" class="textButton" ng-show="showingBest == true || (selectedEventId && selectedEventId!='')">All Games</span>
                 <!--<select ng-model="currentChatter" style="margin-left:9px" >-->
                     <!--<option value="500"> Chatter </option>-->
                     <!--<option value="1"> Lots </option>-->
@@ -217,6 +217,9 @@
                     <div class="type">
                         {{event.event_start_date_time | date:'mediumDate'}}
                     </div>
+                    <div class="note" ng-click="gotoGame(event.event_id)">
+                        Share
+                    </div>
                 </div>
                 <div class="blk" ng-click="showMoreUpcoming()">
                     <div class="title" style="background-color: lightblue">
@@ -224,6 +227,28 @@
                     </div>
                 </div>
             </div>
+
+            <div class="eveContainer" ng-if="selectedEventId">
+                <div class="eve upcoming" ng-if="selectedEventId==event.event_id" ng-repeat="event in upcomingEvents | orderBy:'event_start_date_time':false | limitTo:upcomingCount">
+                    <div class="title">
+                        <span ng-click="setCurrentTeam(event.home_team_id)">{{teamsById[event.home_team_id].full_name}}</span>
+                        <img ng-src="img/logos/{{teamsById[event.home_team_id].abbreviation}}.gif" alt="" style="max-height: 40px"/>
+                        &#64; <br/>
+                        <span ng-click="setCurrentTeam(event.away_team_id)">{{teamsById[event.away_team_id].full_name}}</span>
+                        <img ng-src="img/logos/{{teamsById[event.away_team_id].abbreviation}}.gif" alt="" style="max-height: 40px"/>
+                    </div>
+                    <div class="note">
+                        {{event.startingIn}}
+                    </div>
+                    <div class="type">
+                        {{event.event_start_date_time | date:'mediumDate'}}
+                    </div>
+                    <div class="note" ng-click="gotoGame(event.event_id)">
+                        Share
+                    </div>
+                </div>
+            </div>
+
             <div class="eveContainer"
                     masonry-wall-dir=".eve"
                     masonry-wall-options="{

@@ -124,17 +124,13 @@ app.controller('mainController', ['$scope','$http','Teams','$window','$location'
         $scope.events = [];
 
         $scope.selectedEventId = '';
-        var currentGameUrl = $location.hash();
+        var currentGameUrl = $location.search().game;
         console.log("initial currentGameUrl",currentGameUrl);
         if (currentGameUrl) {
             $scope.selectedEventId = currentGameUrl;
         }
 
-        console.log("initial $routeParams",$routeParams);
-        console.log("initial $routeParams.eventId",$routeParams.eventId);
-
-
-		// REST API ====
+    // REST API ====
 		// when landing on the page get all teams
 		Teams.get()
 			.success(function(data) {
@@ -225,26 +221,13 @@ app.controller('mainController', ['$scope','$http','Teams','$window','$location'
 
             });
 
-    //www.bestgametowatch.com/#/?game=NYK
-
         $scope.gotoGame = function(eId) {
             console.log("gotoGame id",eId);
             if (eId) {
                 $scope.selectedEventId = eId;
                 $scope.$emit('tilesUpdated');
             }
-//            $location.hash(eId);
-            var path = '/event/'+eId;
-            console.log("gotoGame path",path);
-
-            if (!$.isEmptyObject($location.search())) {
-                $location.path(path).search('');
-            } else {
-                $location.path(path);
-            }
-
-            //http://www.bestgametowatch.com/#/%3Fgame=20151115-new-orleans-pelicans-at-new-york-knicks
-            //http://www.bestgametowatch.com/#/%3Fgame=20151114-brooklyn-nets-at-golden-state-warriors
+            $location.search('game', eId);
         }
 
         $scope.isPlural = function(number) {
@@ -414,11 +397,13 @@ app.controller('mainController', ['$scope','$http','Teams','$window','$location'
             console.log('scope.showUpcoming',$scope.showUpcoming);
         }
 
-        $scope.showAll = function() {
+        $scope.showAll = function(resetSelected) {
             console.log('scope.showAll');
             $scope.events = $scope.completedEvents;
-            $scope.selectedEventId = '';
-            $location.hash('');
+            if (resetSelected) {
+                $scope.selectedEventId = '';
+                $location.search('game', '');
+            }
             $scope.showingBest = false;
         }
 

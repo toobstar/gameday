@@ -4,13 +4,13 @@ angular.module( 'gameDay', ['mainController', 'teamService'] ).config(
         function ($locationProvider, $routeProvider) {
             //commenting out this line (switching to hashbang mode) breaks the app
             //-- unless # is added to the templates
-            //$locationProvider.html5Mode(true);
-            $routeProvider.when('/', {
-                controller:'mainController'
-            });
-            $routeProvider.when('/event/:eventId', {
-                controller:'mainController'
-            });
+            $locationProvider.html5Mode(true);
+//            $routeProvider.when('/', {
+//                controller:'mainController'
+//            });
+//            $routeProvider.when('/event/:eventId', {
+//                controller:'mainController'
+//            })
 //                .otherwise({redirectTo:'/'});
         }
     ]);
