@@ -819,7 +819,7 @@ module.exports = function (app) {
                 var eventStartDateETzone = moment(event.event_start_date_time).zone("-04:00");
                 var eventFinishDateETzone = eventStartDateETzone.clone().add(2, 'hours');
                 var nowETzone = moment().zone("-04:00");
-                var seasonStart = moment('2015-10-25');
+                var seasonStart = moment('2016-10-25');
 
                 // could filter out old events here??
 
