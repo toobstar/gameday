@@ -1,4 +1,4 @@
-var app = angular.module( 'teamController', [] );
+var app = angular.module( 'mainController', ['ngRoute'] );
 
 // masonry/angular solution from:   http://plnkr.co/edit/ZuSrSh?p=preview
 app.directive('masonryWallDir', function(){
@@ -67,6 +67,20 @@ app.directive('masonryWallDir', function(){
     };
 });
 
+//app.config(
+//    function($routeProvider) {
+//        $routeProvider.
+//            when('/', {templateUrl:'/home'}).
+//            when('/users/:user_id',
+//            {
+//                controller:UserView,
+//                templateUrl: function(params){ return '/users/view/' + params.user_id; }
+//            }
+//        ).
+//            otherwise({redirectTo:'/'});
+//    }
+//);
+
 app.directive('masonryItemDir',
     function(){
         return {
@@ -90,7 +104,8 @@ app.directive('masonryItemDir',
     }
 );
 
-app.controller('mainController', ['$scope','$http','Teams','$window', function($scope, $http, Teams, $window) {
+app.controller('mainController', ['$scope','$http','Teams','$window','$location','$routeParams', function($scope, $http, Teams, $window, $location, $routeParams) {
+//app.controller('mainController', ['$scope','$http','Teams','$window','$location', function($scope, $http, Teams, $window, $location) {
 
 		$scope.loading = true;
 		$scope.eventCount = 6;
@@ -108,7 +123,14 @@ app.controller('mainController', ['$scope','$http','Teams','$window', function($
         $scope.showingBest = false;
         $scope.events = [];
 
-		// REST API ====
+        $scope.selectedEventId = '';
+        var currentGameUrl = $location.search().game;
+        console.log("initial currentGameUrl",currentGameUrl);
+        if (currentGameUrl) {
+            $scope.selectedEventId = currentGameUrl;
+        }
+
+    // REST API ====
 		// when landing on the page get all teams
 		Teams.get()
 			.success(function(data) {
@@ -198,6 +220,15 @@ app.controller('mainController', ['$scope','$http','Teams','$window', function($
                 });
 
             });
+
+        $scope.gotoGame = function(eId) {
+            console.log("gotoGame id",eId);
+            if (eId) {
+                $scope.selectedEventId = eId;
+                $scope.$emit('tilesUpdated');
+            }
+            $location.search('game', eId);
+        }
 
         $scope.isPlural = function(number) {
             if (number > 1) {
@@ -309,6 +340,11 @@ app.controller('mainController', ['$scope','$http','Teams','$window', function($
             return res1 && res2 && res3 && res4;
         }
         $scope.matchTeamById = function(event){
+
+            if ($scope.selectedEventId && $scope.selectedEventId != '') {
+                return event.event_id == $scope.selectedEventId;
+            }
+
             if (!$scope.currentTeam || !$scope.currentTeam.team_id)
                 return true;
 
@@ -361,9 +397,13 @@ app.controller('mainController', ['$scope','$http','Teams','$window', function($
             console.log('scope.showUpcoming',$scope.showUpcoming);
         }
 
-        $scope.showAll = function() {
+        $scope.showAll = function(resetSelected) {
             console.log('scope.showAll');
             $scope.events = $scope.completedEvents;
+            if (resetSelected) {
+                $scope.selectedEventId = '';
+                $location.search('game', '');
+            }
             $scope.showingBest = false;
         }
 
@@ -398,9 +438,6 @@ app.controller('mainController', ['$scope','$http','Teams','$window', function($
                     $scope.tweets = data;
                 });
         }
-
-
-
 
         $scope.$watch(function() { return $scope.currentRating }, function(value) {
             if(!value) return;

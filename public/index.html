@@ -151,7 +151,8 @@
     </style>
 
     <script src="//ajax.googleapis.com/ajax/libs/jquery/1.8.3/jquery.min.js"></script>
-	<script src="//ajax.googleapis.com/ajax/libs/angularjs/1.2.16/angular.min.js"></script>
+    <script src="//ajax.googleapis.com/ajax/libs/angularjs/1.2.18/angular.min.js"></script>
+    <script src="//ajax.googleapis.com/ajax/libs/angularjs/1.2.18/angular-route.min.js"></script>
     <script src="//cdnjs.cloudflare.com/ajax/libs/masonry/3.1.5/masonry.pkgd.min.js"></script>
     <script src="//cdnjs.cloudflare.com/ajax/libs/underscore.js/1.6.0/underscore-min.js"></script>
     <script src="//desandro.github.io/imagesloaded/imagesloaded.pkgd.min.js"></script>
@@ -163,9 +164,11 @@
     <!--<script src="js/lib/angular.min.js"></script>-->
     <!--<script src="js/lib/masonry.pkgd.min.js"></script>-->
 
+
 	<script src="js/controllers/main.js"></script>
 	<script src="js/services/teams.js"></script>
-	<script src="js/core.js"></script>
+    <script src="js/core.js"></script>
+
 
 </head>
 <body ng-controller="mainController">
@@ -192,7 +195,7 @@
                 <span ng-click="showBestEver()" class="textButton" ng-show="showingBest == false">Best so far</span>
                 <span ng-click="showWithChatter()" class="textButton" ng-show="currentChatter == 10000">High Chatter</span>
                 <span ng-click="showAllChatter()" class="textButton" ng-hide="currentChatter == 10000">All Games</span>
-                <span ng-click="showAll()" class="textButton" ng-show="showingBest == true">All Games</span>
+                <span ng-click="showAll(true)" class="textButton" ng-show="showingBest == true || (selectedEventId && selectedEventId!='')">All Games</span>
                 <!--<select ng-model="currentChatter" style="margin-left:9px" >-->
                     <!--<option value="500"> Chatter </option>-->
                     <!--<option value="1"> Lots </option>-->
@@ -214,6 +217,9 @@
                     <div class="type">
                         {{event.event_start_date_time | date:'mediumDate'}}
                     </div>
+                    <div class="note" ng-click="gotoGame(event.event_id)">
+                        Share
+                    </div>
                 </div>
                 <div class="blk" ng-click="showMoreUpcoming()">
                     <div class="title" style="background-color: lightblue">
@@ -221,6 +227,28 @@
                     </div>
                 </div>
             </div>
+
+            <div class="eveContainer" ng-if="selectedEventId">
+                <div class="eve upcoming" ng-if="selectedEventId==event.event_id" ng-repeat="event in upcomingEvents | orderBy:'event_start_date_time':false | limitTo:upcomingCount">
+                    <div class="title">
+                        <span ng-click="setCurrentTeam(event.home_team_id)">{{teamsById[event.home_team_id].full_name}}</span>
+                        <img ng-src="img/logos/{{teamsById[event.home_team_id].abbreviation}}.gif" alt="" style="max-height: 40px"/>
+                        &#64; <br/>
+                        <span ng-click="setCurrentTeam(event.away_team_id)">{{teamsById[event.away_team_id].full_name}}</span>
+                        <img ng-src="img/logos/{{teamsById[event.away_team_id].abbreviation}}.gif" alt="" style="max-height: 40px"/>
+                    </div>
+                    <div class="note">
+                        {{event.startingIn}}
+                    </div>
+                    <div class="type">
+                        {{event.event_start_date_time | date:'mediumDate'}}
+                    </div>
+                    <div class="note" ng-click="gotoGame(event.event_id)">
+                        Share
+                    </div>
+                </div>
+            </div>
+
             <div class="eveContainer"
                     masonry-wall-dir=".eve"
                     masonry-wall-options="{
@@ -248,17 +276,18 @@
                             {{event.finalScore}}
                         </span>
                     </div>
-                    <div class="note" >
-                        <div ng-class="{userVoted:event.userVoted == true}" style="width:65px;padding-bottom:5px;">
-                            <span ng-click="likeEvent(event)" >
-                                <img src="img/up.png" alt="like" title="like" style="width: 20px"/>
-                                <span ng-show="event.dislikeCount > 0 || event.likeCount > 0">{{event.likeCount}}</span>
-                            </span>
-                            <span ng-click="dislikeEvent(event)">
-                                <img src="img/down.png" alt="Dislike" title="Dislike" style="width: 20px"/>
-                                <span ng-show="event.dislikeCount > 0 || event.likeCount > 0">{{event.dislikeCount}}</span>
-                            </span>
-                        </div>
+                    <div class="note" ng-click="gotoGame(event.event_id)">
+                        Share
+                        <!--<div ng-class="{userVoted:event.userVoted == true}" style="width:65px;padding-bottom:5px;">-->
+                            <!--<span ng-click="likeEvent(event)" >-->
+                                <!--<img src="img/up.png" alt="like" title="like" style="width: 20px"/>-->
+                                <!--<span ng-show="event.dislikeCount > 0 || event.likeCount > 0">{{event.likeCount}}</span>-->
+                            <!--</span>-->
+                            <!--<span ng-click="dislikeEvent(event)">-->
+                                <!--<img src="img/down.png" alt="Dislike" title="Dislike" style="width: 20px"/>-->
+                                <!--<span ng-show="event.dislikeCount > 0 || event.likeCount > 0">{{event.dislikeCount}}</span>-->
+                            <!--</span>-->
+                        <!--</div>-->
                     </div>
                     <div class="type" style="float: right">
                         {{event.event_start_date_time | date:'mediumDate'}}

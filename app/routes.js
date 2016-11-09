@@ -120,14 +120,14 @@ lookup['minnesota-timberwolves']='#TWolves, #Timberwolves';
 lookup['new-orleans-pelicans']='#pelicans';
 lookup['new-york-knicks']='#Knicks';
 lookup['oklahoma-city-thunder']='#okcthunder,#OklahomaCityThunder';
-lookup['orlando-magic']='#OrlandoMagic, #Magic';
-lookup['philadelphia-76ers']='#76ers';
+lookup['orlando-magic']='#OrlandoMagic, #Magic, #puremagic';
+lookup['philadelphia-76ers']='#76ers,#Sixerstalk';
 lookup['phoenix-suns']='#Suns';
 lookup['portland-trail-blazers']='#TrailBlazers,#Blazers,#RipCity';
 lookup['sacramento-kings']='#NBAKings';
 lookup['san-antonio-spurs']='#GoSpursGo,#Spurs';
 lookup['toronto-raptors']='#Raptors';
-lookup['utah-jazz']='#UtahJazz';
+lookup['utah-jazz']='#UtahJazz, #jazznation';
 lookup['washington-wizards']='#Wizards';
 
 var lookup2 = {};
@@ -819,9 +819,13 @@ module.exports = function (app) {
                 var eventStartDateETzone = moment(event.event_start_date_time).zone("-04:00");
                 var eventFinishDateETzone = eventStartDateETzone.clone().add(2, 'hours');
                 var nowETzone = moment().zone("-04:00");
+                var seasonStart = moment('2015-10-25');
 
-                if (eventFinishDateETzone.isAfter(nowETzone)) {
+                // could filter out old events here??
+
+                if (eventFinishDateETzone.isAfter(nowETzone) || eventFinishDateETzone.isBefore(seasonStart)) {
                     console.log('after now ',eventFinishDateETzone.format("dddd, MMMM Do YYYY, h:mm:ss a"));
+                    console.log('or before season start ',seasonStart.format("dddd, MMMM Do YYYY, h:mm:ss a"));
                 }
                 else {
 
