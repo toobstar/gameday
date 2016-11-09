@@ -589,7 +589,7 @@ function calcScores(event) {
 
     if (event.fullModel && event.fullModel.away_stats && event.fullModel.home_stats) {
         event.aussies = [];
-        var ausPlayers = ['EXUM','BAIRSTOW','BOGUT','PATTY','MILLS','INGLES','DELLAVEDOVA','MOTUM','BAYNES'];
+        var ausPlayers = ['EXUM','BAIRSTOW','BOGUT','PATTY','MILLS','INGLES','DELLAVEDOVA','MOTUM','BAYNES','MAKER'];
         _.each(event.fullModel.away_stats.concat(event.fullModel.home_stats),function(stat){
             //console.log("checking player: ", stat.display_name);
             if (_.contains(ausPlayers, stat.last_name.toUpperCase())) {
